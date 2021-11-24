@@ -1,0 +1,20 @@
+
+
+scrutc/class server
+{
+	listen string;
+	error string;
+	name string;
+
+	map<string string> index / value;
+	vector de client
+}
+
+client{
+	FD in;
+	FD out;
+	request client;
+	repsond;
+}
+
+scrut
