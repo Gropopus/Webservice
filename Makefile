@@ -5,61 +5,59 @@
 #                                                     +:+ +:+         +:+      #
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/11/02 10:51:22 by thsembel          #+#    #+#              #
-#    Updated: 2021/11/24 15:34:07 by gmaris           ###   ########.fr        #
+#    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
+#    Updated: 2021/11/24 16:21:02 by gmaris           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NC = \033[0m
-RED = \033[0;91m
-ORANGE = \033[93m
-GREEN = \033[0;92m
-PURPLE = \033[0;95m
-BLUE = \033[0;34m
-BOLD = \033[1m
+NAME = webserv
 
-SRCS		=	./srcs/Webserv.cpp 
+CC = clang++
+FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
-INCLUDES	=	./includes/Web_serv.hpp \
-				./srcs/Env.cpp \
-				./srcs/Client.hpp \
-				./srcs/Server.hpp \
-				./srcs/Parser.hpp \
-				./srcs/Manager.hpp \
-				./srcs/Helper.hpp
-
-HEAD		=	./includes/
+SRCS_DIR = ./srcs/
+SRC =	main.cpp
 
 
-NAME		= Webserv
 
-CC			= clang++
+INC			= Web_serv.hpp
 
-OBJS		= ${SRCS:.cpp=.o}
 
-RM			= rm -f
+OBJS_DIR 	= 	./obj/
+OBJ 		= 	$(SRC:.cpp=.o)
+OBJS 		= 	$(addprefix $(OBJS_DIR), $(OBJ))
 
-CFLAGS		= -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+INC_DIR		= 	./includes/
+INCS		= 	$(addprefix $(INC_DIR), $(INC))
+INC_FLAG 	= 	-I $(INC_DIR)
+SRCS 		= 	$(addprefix $(SRCS_DIR), $(SRC))
 
-.cpp.o:
-		@${CC} ${CFLAGS} -I${HEAD} -c $< -o ${<:.cpp=.o}
-		@echo "${GREEN}[ OK ]	${ORANGE}${<:.s=.o}${NC}"
+YELLOW = \033[033m
+GREEN = \033[032m
+BLUE = \033[36m
+RED = \033[031m
+PURPLE = \033[35m
+RESET = \033[0m
 
-all:		${NAME}
+$(OBJS_DIR)%.o :	$(SRCS_DIR)%.cpp $(INCS)
+	@mkdir -p $(OBJS_DIR)
+	@echo "$(YELLOW)$(notdir $(basename $@))...$(RESET)\t\t[$(GREEN)OK$(RESET)]"
+	@$(CC) -I./includes $(FLAGS) -c $< -o $@
 
-${NAME}:	${OBJS}
-			@${CC} ${CFLAGS} -I${HEAD} -o ${NAME} $(OBJS)
-			@echo "${GREEN}Webserv	has been created\n${NC}"
+$(NAME): $(OBJS) Makefile $(INCS)
+	@$(CC) $(INC_FLAG) $(FLAGS) -o $(NAME) $(OBJS)
+	@echo "[$(GREEN)$(NAME) compiled$(RESET)]"
+
+all: $(NAME)
 
 clean:
-			@${RM} ${OBJS}
-			@echo "${GREEN}[ OK ]${RED}	*.o files	deleted${NC}"
+	@echo "Cleaning: $(OBJS_DIR)"
+	@rm -rf $(OBJS_DIR)
 
-fclean:		clean
-			@${RM} ${NAME}
-			@echo "${GREEN}[ OK ]${RED}	Webserv	deleted${NC}"
+fclean: clean
+	@echo "Cleaning: $(NAME)"
+	@rm -f $(NAME)
 
-re :		fclean all
+re: fclean all
 
-.PHONY:		all	clean	fclean re
-
+.PHONY: fclean clean re all
