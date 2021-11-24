@@ -1,4 +1,9 @@
 
+Env
+{
+	vector de server
+}
+
 
 scrutc/class server
 {

@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/24 16:21:02 by gmaris           ###   ########.fr        #
+#    Updated: 2021/11/24 17:33:26 by gmaris           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,11 +16,16 @@ CC = clang++
 FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
 SRCS_DIR = ./srcs/
-SRC =	main.cpp
+SRC 		=	Webserv.cpp\
+				Env.cpp\
+				GetContent.cpp\
+				Server.cpp
 
 
 
-INC			= Web_serv.hpp
+INC			=	Web_serv.hpp\
+				Env.hpp\
+				Server.hpp
 
 
 OBJS_DIR 	= 	./obj/

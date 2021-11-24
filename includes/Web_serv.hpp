@@ -6,12 +6,18 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/24 15:28:53 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/24 17:32:37 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEB_SERV_HPP
 #define WEB_SERV_HPP
+
+//Class include
+# include "Server.hpp"
+# include "Env.hpp"
+
+
 
 /* C++ */
 # include <iostream>
@@ -47,5 +53,8 @@
 #define CYAN    "\033[36m"      /* Cyan */
 #define WHITE   "\033[37m"      /* White */
 # define NC     "\033[0m"
+
+typedef std::string string;
+bool	getContent(std::string &buffer, std::string &context, std::string prec, Server &serv);
 
 #endif
