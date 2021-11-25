@@ -6,26 +6,29 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/24 17:33:26 by gmaris           ###   ########.fr        #
+#    Updated: 2021/11/25 15:58:54 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 
 CC = clang++
-FLAGS = -Wall -Wextra -Werror -std=c++98 -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 
 SRCS_DIR = ./srcs/
 SRC 		=	Webserv.cpp\
 				Env.cpp\
-				GetContent.cpp\
-				Server.cpp
+				FileParsing.cpp\
+				Server.cpp \
+				Client.cpp \
+				Utils.cpp
 
 
 
 INC			=	Web_serv.hpp\
 				Env.hpp\
-				Server.hpp
+				Server.hpp \
+				Client.hpp
 
 
 OBJS_DIR 	= 	./obj/

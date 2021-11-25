@@ -1,4 +1,27 @@
 
+yo ! J'ai finit le parsing avec les maps mais ca ne marche pas parce que les maps
+classent par ordre alphabetique, donc pas moyen de savoir quelle index est a quelle locations.
+on finit avec une map genre:
+[index][lol.html]
+[index][fait_chier.html]
+[location][/merde]
+[location][/oopsie]
+[root][..../.././]
+bref ca avait l'air d'une bonne idee mais il semble que nous soyons un peu con (surtout moi qui aurait du le voir venir ayant fait container)
+
+Du coup j'ai fait le parsing avec un vector de struct locations. et la ca marche bien.
+
+pour resumer:
+
+class Env:
+	vector de classe server:
+			-pour chaque server:
+				vector de classe config contenant les info de toutes les pages.
+			-vector de client connectes au server.
+				pour chaque client:
+						struct request.
+						struct reponse.
+
 Env
 {
 	vector de server
@@ -11,8 +34,8 @@ scrutc/class server
 	error string;
 	name string;
 
-	map<string string> index / value;
-	vector de client
+	map<string string> index / value; NOP -> vector <struct> contenant tout sous forme de string.
+	vector de <clients>
 }
 
 client{

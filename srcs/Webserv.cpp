@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:19:05 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/24 16:41:19 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/25 13:06:50 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ int		main(int ac, char **av)
 	try
 	{
 		Env env(_getFile(av[1]));
+		env.launchWebserv();
 	}
 	catch(const std::exception& e)
 	{

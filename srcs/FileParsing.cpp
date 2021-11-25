@@ -6,48 +6,12 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:54:56 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/24 17:32:42 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/25 16:08:34 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Web_serv.hpp"
-
-static void	ft_gnl(string &buffer, string &line)
-{
-	size_t					pos;
-
-	pos = buffer.find("\n");
-	if (pos != string::npos)
-	{
-		line = string (buffer, 0, pos++);
-		buffer = buffer.substr(pos);
-	}
-	else
-	{
-		if (buffer[buffer.size() - 1] == '\n')
-			buffer = buffer.substr(buffer.size());
-		else
-		{
-			line = buffer;
-			buffer = buffer.substr(buffer.size());
-		}
-	}
-}
-
-static string	_eraseWhiteSpace(int i, int to, string str)
-{
-	while (str[i] == '\f' || str[i] == '\t' || str[i] == '\v'
-	|| str[i] == '\n' || str[i] == '\r' || str[i] == ' ')
-	{
-		if (to == -1)
-			str.erase(str.begin());
-		else
-			str.erase(i, to);
-	}
-	return (str);
-}
-
-
+#include "Env.hpp"
 int		getPair(std::string &line, std::string *key, std::string *value)
 {
 	int i = 0;
@@ -79,10 +43,34 @@ int		getPair(std::string &line, std::string *key, std::string *value)
 	return (i);
 }
 
-
-bool	getContent(std::string &buffer, std::string &context, std::string prec, Server &serv)
+void	fill_conf(Server &serv, t_conf &conf, std::string &key, std::string &value)
 {
+	if (key == "index")
+		conf.index = value;
+	else if (key == "root")
+		conf.root = value;
+	else if (key == "methods")
+		conf.methods = value;
+	else if (key == "max_body")
+		conf.max_body = ft_stoi(value);
+	else if (key == "CGI")
+		conf.cgi = value;
+	else if (key == "exec")
+		conf.exec = value;
+	else if (key == "auth")
+		conf.auth = value;
+	else if (key == "php")
+		conf.php = value;
+	else if (key == "listen")
+		serv._Port = ft_stoi(value);
+	else if (key == "error")
+		serv._Error = value;
+	else if (key == "server_name")
+		serv._Name = value;
+}
 
+bool	Env::getContent(std::string &buffer, std::string prec, Server &serv, t_conf &tmp_conf, int *i)
+{
 	std::string			line;
 	std::string			key;
 	std::string			value;
@@ -91,24 +79,32 @@ bool	getContent(std::string &buffer, std::string &context, std::string prec, Ser
 	prec.pop_back();
 	while (prec.back() == ' ' || prec.back() == '\t')
 		prec.pop_back();
-	context += prec + "|";
-	line = _eraseWhiteSpace(0, -1, line);
+	if (prec.find("location") != std::string::npos)
+	{
+		if (*i > 0)
+		{
+			serv.config.push_back(tmp_conf);
+			tmp_conf.clear();
+		}
+		value = prec.substr(9);
+		tmp_conf.location = value;
+		value.clear();
+		*i+=1;
+	}
+	line = eraseWhiteSpace(0, -1, line);
 	while (line != "}" && !buffer.empty())
 	{
 		ft_gnl(buffer, line);
-		line = _eraseWhiteSpace(0, -1, line);
+		line = eraseWhiteSpace(0, -1, line);
 		if (line[0] != '}')
 		{
 			if ((pos = getPair(line, &key, &value)) < 0)
 				return (false);
 			else if (line[pos] == '{')
-				getContent(buffer, context, line, serv);
+				getContent(buffer, line, serv, tmp_conf, i);
 			else
 			{
-			//	std::cout << "key: " << key << "\nvalue: " << value << std::endl;
-				std::pair<std::string, std::string>	tmp(key, value);
-			//	std::cout << "context: " << context << std::endl;
-		//		serv.config[context].insert(tmp);
+				fill_conf(serv, tmp_conf, key, value);
 				key.clear();
 				value.clear();
 			}
@@ -116,11 +112,9 @@ bool	getContent(std::string &buffer, std::string &context, std::string prec, Ser
 		else if (line[0] == '}' && !buffer.empty())
 		{
 			pos = 0;
-			line = _eraseWhiteSpace(pos++, -1, line);
+			line = eraseWhiteSpace(pos++, -1, line);
 			if (line[pos])
 				return (false);
-			context.pop_back();
-			context = context.substr(0, context.find_last_of(':') + 1);
 		}
 	}
 	return (true);

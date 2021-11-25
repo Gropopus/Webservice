@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/24 17:32:37 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/25 16:08:13 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 #define WEB_SERV_HPP
 
 //Class include
-# include "Server.hpp"
-# include "Env.hpp"
-
+//# include "Server.hpp"
+//# include "Env.hpp"
+//# include "Client.hpp"
 
 
 /* C++ */
@@ -54,7 +54,45 @@
 #define WHITE   "\033[37m"      /* White */
 # define NC     "\033[0m"
 
-typedef std::string string;
-bool	getContent(std::string &buffer, std::string &context, std::string prec, Server &serv);
+struct Request
+{
+	bool								valid;
+	std::string							method;
+	std::string							uri;
+	std::string							version;
+	std::map<std::string, std::string> 	headers;
+	std::string							body;
 
+	void	clear()
+	{
+		method.clear();
+		uri.clear();
+		version.clear();
+		headers.clear();
+		body.clear();
+	}
+};
+
+struct Response
+{
+	std::string							version;
+	std::string							status_code;
+	std::map<std::string, std::string> 	headers;
+	std::string							body;
+
+	void	clear()
+	{
+		version.clear();
+		status_code.clear();
+		headers.clear();
+		body.clear();
+	}
+};
+
+class Server;
+typedef std::string string;
+
+void	ft_gnl(string &buffer, string &line);
+string	eraseWhiteSpace(int i, int to, string str);
+int		ft_stoi(std::string str);
 #endif
