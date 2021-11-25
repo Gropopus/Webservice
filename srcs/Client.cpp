@@ -6,19 +6,17 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:29:17 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 16:20:52 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/25 17:02:00 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 # include "Web_serv.hpp"
 # include "Client.hpp"
-# define BUFFER_SIZE 10000
 
 Client::Client(int filed, fd_set *r, fd_set *w, struct sockaddr_in info)
 : fd(filed), read_fd(-1), write_fd(-1), rSet(r), wSet(w)
 {
 	ip = inet_ntoa(info.sin_addr);
 	port = htons(info.sin_port);
-//	std::memset(rBuf, 0, BUFFER_SIZE);
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	FD_SET(fd, rSet);
 	FD_SET(fd, wSet);
@@ -28,8 +26,7 @@ Client::Client(int filed, fd_set *r, fd_set *w, struct sockaddr_in info)
 
 Client::~Client(void)
 {
-	free(rBuf);
-	rBuf = NULL;
+	Buf.clear();
 	if (fd != -1)
 	{
 		close(fd);

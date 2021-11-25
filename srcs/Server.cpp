@@ -6,14 +6,14 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 16:22:40 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/25 17:07:57 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 # define MAX_FD 256
-Server::Server(void) : _Port(-1), _Fd(-1), _MaxFd(-1) { return ;}
 
+Server::Server(void) : _Port(-1), _Fd(-1), _MaxFd(-1) { return ;}
 
 Server::~Server(void)
 {
@@ -125,6 +125,45 @@ void	Server::acceptConnection(void)
 		_MaxFd = fd;
 	newOne = new Client(fd, _RSet, _WSet, info);
 	Clients.push_back(newOne);
+}
+
+int		Server::readRequest(std::vector<Client*>::iterator it)
+{
+	int			ret;
+	Client		*client = NULL;
+	char		Buffer[BUFFER_SIZE];
+
+	client = *it;
+	std::memset(Buffer, '\0', BUFFER_SIZE);
+	ret = recv(client->fd, Buffer, BUFFER_SIZE - 1, 0);
+	if (ret == 0 || ret == -1)
+	{
+		*it = NULL;
+		close(client->fd);
+		Clients.erase(it);
+		if (client)
+			delete client;
+		if (!ret)
+		{
+			std::cout << "Client " << RED << "closed" << NC << " the connection on port:\t[";
+			std::cout << GREEN << _Port << NC << "]\n" << std::endl;
+		}
+		else
+		{
+			std::cout << "The connection was \t" << RED << "closed" << NC << " on port:\t[";
+			std::cout << GREEN << _Port << NC << "] due to a recv error." << std::endl;
+		}
+		return (0);
+	}
+	else
+	{
+		client->Buf = std::string(Buffer);
+		std::cout << "\nPort:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
+//		client->setFdSets(true, 1);
+		return (1);
+	}
+	return (-1);
 }
 
 Server::ServerFailure::ServerFailure(std::string Error)

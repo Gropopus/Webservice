@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 16:00:33 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/25 16:54:50 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,7 @@ int				Env::getOpenFd(void)
 	return (nb);
 }
 
-/*void	Env::handleRequests(std::vector<Server>::iterator server)
+void	Env::handleRequests(std::vector<Server>::iterator server)
 {
 	std::vector<Client*>::iterator it_client = server->Clients.begin();
 	while (it_client != server->Clients.end())
@@ -154,7 +154,7 @@ int				Env::getOpenFd(void)
 		if (FD_ISSET(_Client->fd, &_ReadSet))
 			if (!server->readRequest(it_client))
 				break ;
-		if (FD_ISSET(_Client->fd, &_WriteSet))
+/*		if (FD_ISSET(_Client->fd, &_WriteSet))
 			if (!server->writeResponse(it_client))
 				break ;
 		if (_Client->write_fd != -1)
@@ -162,10 +162,10 @@ int				Env::getOpenFd(void)
 				_Client->writeFile();
 		if (_Client->read_fd != -1)
 			if (FD_ISSET(_Client->read_fd, &_ReadSet))
-				_Client->readFile();
+				_Client->readFile();*/
 		it_client++;
 	}
-}*/
+}
 
 void	Env::launchWebserv(void)
 {
@@ -206,7 +206,8 @@ void	Env::launchWebserv(void)
 		//	if (!server->_tmp_clients.empty())
 		//		if (FD_ISSET(server->_tmp_clients.front(), &_WriteSet))
 				//erreur 503
- 		}
+			handleRequests(server);
+		}
 	}
 	_Servers.clear();
 	return ;

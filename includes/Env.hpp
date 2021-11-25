@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:15:20 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 13:06:47 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/25 16:49:12 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <vector>
 typedef std::string string;
 
+class	Client;
 class	Server;
 struct t_conf;
 class	 Env
@@ -53,7 +54,7 @@ class	 Env
 	 	fd_set					_WSet;
 	 	struct timeval			_Timeout;
 	 	std::vector<Server>		_Servers;
-	 	// Client					*_Client;
+	 	Client					*_Client;
 };
 
 # endif
