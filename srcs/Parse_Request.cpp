@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 16:48:38 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 19:03:55 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # include "Client.hpp"
 # include "Server.hpp"
 
-void	getHeader(std::string &buffer, Request &request)
+bool	getHeader(std::string &buffer, Request &request)
 {
 	size_t		i;
 	std::string	line;
@@ -35,37 +35,35 @@ void	getHeader(std::string &buffer, Request &request)
 			else
 				value = line.substr(i + 1);
 			if (std::isspace(value[0]) || std::isspace(key[0]) || value.empty() || key.empty())
-			{
-				request.valid = false;
-				return ;
-			}
+				return (false);
 			std::cout << "key: " << key << std::endl;
 			std::cout << "value: " << value << std::endl;
  			request.headers[key] = value;
  			request.headers[key].pop_back(); //remove \r
 		}
 		else
-		{
-			request.valid = false;
-			return ;
-		}
+			return (false);
 	}
+	return (true);
 }
 
 void	getConf(Server &server, Request &request)
 {
 	std::vector<t_conf>::iterator it = server.config.begin();
+	int ret = 0;
 
 	while (it != server.config.end())
 	{
-		if ((*it).location == request.uri)
+		if (request.uri.find((*it).location) != std::string::npos)
 		{
 			request.config = (*it);
-			return ;
+			ret++;
 		}
 		it++;
 	}
-	request.valid = false;
+	if (ret == 0)
+		request.config = server.config[0];
+	std::cout << CYAN << request.config.location << NC << std::endl;
 }
 
 void	Server::ParseRequest(Client &client)
@@ -84,15 +82,25 @@ void	Server::ParseRequest(Client &client)
 	request.version.pop_back();
 	if (request.method.size() == 0 || request.uri.size() == 0
 		|| request.version.size() == 0)
+	{
 		request.valid = false;
+		request.status_code = BADREQUEST;
+	}
 	if (request.method != "GET" && request.method != "POST"
 		&& request.method != "HEAD" && request.method != "PUT"
 		&& request.method != "CONNECT" && request.method != "TRACE"
 		&& request.method != "OPTIONS" && request.method != "DELETE")
+	{
+		request.status_code = BADREQUEST;
 		request.valid =  false;
+	}
 	if (request.version != "HTTP/1.1")
 		request.valid = false;
-	getHeader(buffer, request);
+	if (getHeader(buffer, request) == false)
+	{	
+		request.valid = false;
+		request.status_code = BADREQUEST;
+	}
 	if (request.valid == true)
 		getConf(*this, request);
 	client.request = request;

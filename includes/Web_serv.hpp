@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/26 17:17:35 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 18:29:53 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ struct Request
 	std::string							version;
 	std::map<std::string, std::string> 	headers;
 	std::string							body;
+	std::string status_code;
 
 	void	clear()
 	{
@@ -110,6 +111,7 @@ struct Request
 		version.clear();
 		headers.clear();
 		body.clear();
+		status_code.clear();
 	}
 };
 

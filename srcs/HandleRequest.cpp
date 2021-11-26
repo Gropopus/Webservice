@@ -6,11 +6,29 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 17:17:42 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 19:04:05 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
 #include "Web_serv.hpp"
+
+void	HandleGET(Client &client)
+{
+	if (client.request.config.methods.find("GET") == std::string::npos)
+		client.response.status_code = NOTALLOWED;
+}
+
+void	HandlePOST(Client &client)
+{
+	if (client.request.config.methods.find("POST") == std::string::npos)
+		client.response.status_code = NOTALLOWED;
+}
+
+void	HandleDELETE(Client &client)
+{
+	if (client.request.config.methods.find("DELETE") == std::string::npos)
+		client.response.status_code = NOTALLOWED;
+}
 
 void	HandleBAD(Client &client)
 {
