@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/26 15:37:25 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 16:03:26 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,36 @@
 #define NOTIMPLEMENTED	"501 Not Implemented"
 #define INTERNALERROR	"500 Internal Server Error"
 
-struct t_conf;
+struct	t_conf
+{
+	std::string location;
+	std::string index;
+	std::string root;
+	std::string methods;
+	int			port;
+	int			max_body;
+	std::string cgi;
+	std::string exec;
+	std::string auth;
+	std::string php;
+
+	void	clear(void)
+	{
+		index.clear();
+		root.clear();
+		methods.clear();
+		max_body = 0;
+		cgi.clear();
+		exec.clear();
+		auth.clear();
+		php.clear();
+		port = 0;
+	}
+};
+
 struct Request
 {
-//	struct t_conf						config;
+	struct t_conf						config;
 	bool								valid;
 	std::string							method;
 	std::string							uri;

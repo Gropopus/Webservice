@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 15:21:17 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 16:06:44 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,43 +59,20 @@
 	}
 	client.req = request;
 */
-bool		parseHeaders(std::string &buf, Request &req)
+void	getConf(Server &server, Request &request)
 {
-	size_t		i;
-	std::string	line;
-	std::string	key;
-	std::string	value;
-
-	while (!buf.empty())
+	std::vector<t_conf>::iterator it = server.config.begin();
+	while (it != server.config.end())
 	{
-		ft_gnl(buf, line, '\n');
-		if (line.size() < 1 || line[0] == '\n' || line[0] == '\r')
-			break ;
-		if (line.find(':') != std::string::npos)
+		if ((*it).location == request.uri)
 		{
-			i = line.find(':');
-			key = line.substr(0, i);
-			if (line[i + 1] == ' ')
-				value = line.substr(i + 2);
-			else
-				value = line.substr(i + 1);
-			if (std::isspace(value[0]) || std::isspace(key[0]) || value.empty() || key.empty())
-			{
-				req.valid = false;
-				return (false);
-			}
- 			req.headers[key] = value;
- 			req.headers[key].pop_back(); //remove '\r'
+			request.config = (*it);
+			return ;
 		}
-		else
-		{
-			req.valid = false;
-			return (false);
-		}
+		it++;
 	}
-	return (true);
+	request.valid = false;
 }
-
 
 void	Server::ParseRequest(Client &client)
 {
@@ -110,6 +87,7 @@ void	Server::ParseRequest(Client &client)
 	ft_gnl(buffer, request.method, ' ');
 	ft_gnl(buffer, request.uri, ' ');
 	ft_gnl(buffer, request.version, '\n');
+	request.version.pop_back();
 	if (request.method.size() == 0 || request.uri.size() == 0
 		|| request.version.size() == 0)
 		request.valid = false;
@@ -118,7 +96,9 @@ void	Server::ParseRequest(Client &client)
 		&& request.method != "CONNECT" && request.method != "TRACE"
 		&& request.method != "OPTIONS" && request.method != "DELETE")
 		request.valid =  false;
-	if (request.version != "HTTP/1.1" && request.version != "HTTP1/1\r")
+	if (request.version != "HTTP/1.1")
 		request.valid = false;
+	if (request.valid == true)
+		getConf(*this, request);
 	client.request = request;
 }

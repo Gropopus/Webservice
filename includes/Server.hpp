@@ -11,34 +11,7 @@ typedef std::string string;
 #define TIMEOUT 10
 #define RETRY	"25"
 
-
-struct	t_conf
-{
-	std::string location;
-	std::string index;
-	std::string root;
-	std::string methods;
-	int			port;
-	int			max_body;
-	std::string cgi;
-	std::string exec;
-	std::string auth;
-	std::string php;
-
-	void	clear(void)
-	{
-		index.clear();
-		root.clear();
-		methods.clear();
-		max_body = 0;
-		cgi.clear();
-		exec.clear();
-		auth.clear();
-		php.clear();
-		port = 0;
-	}
-};
-
+struct t_conf;
 class Client;
 class Server
 {
