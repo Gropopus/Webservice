@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:22:42 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 15:20:34 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 17:49:25 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef CLIENT_HPP
@@ -15,10 +15,6 @@
 
 class Client
 {
-//	friend class Server;
-//	friend class Manager;
-//	friend class Helper;
-
 /*	typedef std::map<std::string, std::string> t_conf;
 	struct t_chunk
 	{
