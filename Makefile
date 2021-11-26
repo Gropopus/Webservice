@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/25 15:58:54 by thsembel         ###   ########.fr        #
+#    Updated: 2021/11/26 12:17:36 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRC 		=	Webserv.cpp\
 				FileParsing.cpp\
 				Server.cpp \
 				Client.cpp \
+				Parse_Request.cpp \
 				Utils.cpp
 
 

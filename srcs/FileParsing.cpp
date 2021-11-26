@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:54:56 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/25 16:08:34 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 11:45:08 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ bool	Env::getContent(std::string &buffer, std::string prec, Server &serv, t_conf
 	line = eraseWhiteSpace(0, -1, line);
 	while (line != "}" && !buffer.empty())
 	{
-		ft_gnl(buffer, line);
+		ft_gnl(buffer, line,'\n');
 		line = eraseWhiteSpace(0, -1, line);
 		if (line[0] != '}')
 		{

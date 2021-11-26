@@ -60,7 +60,7 @@ class Server
 		int		readRequest(std::vector<Client*>::iterator it);
 		void	init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet);
 		void	acceptConnection(void);
-
+		void	ParseRequest(Client &client);
 		class		ServerFailure: public std::exception
 		{
 			public:
@@ -73,7 +73,6 @@ class Server
 	private:
 		int					_Fd;
 		int					_MaxFd;
-//		struct sockaddr_in		_Info;
 		fd_set					*_ReadSet;
 		fd_set					*_WriteSet;
 		fd_set					*_RSet;

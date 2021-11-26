@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/25 16:46:39 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 15:37:25 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 //# include "Server.hpp"
 //# include "Env.hpp"
 //# include "Client.hpp"
-
 
 /* C++ */
 # include <iostream>
@@ -55,8 +54,22 @@
 #define NC		"\033[0m"
 #define BUFFER_SIZE		10000
 
+#define OK 				"200 OK"
+#define CREATED			"201 Created"
+#define NOCONTENT		"204 No Content"
+#define BADREQUEST		"400 Bad Request"
+#define UNAUTHORIZED	"401 Unauthorized"
+#define NOTFOUND 		"404 Not Found"
+#define NOTALLOWED		"405 Method Not Allowed"
+#define REQTOOLARGE		"413 Request Entity Too Large"
+#define UNAVAILABLE		"503 Service Unavailable"
+#define NOTIMPLEMENTED	"501 Not Implemented"
+#define INTERNALERROR	"500 Internal Server Error"
+
+struct t_conf;
 struct Request
 {
+//	struct t_conf						config;
 	bool								valid;
 	std::string							method;
 	std::string							uri;
@@ -93,7 +106,7 @@ struct Response
 class Server;
 typedef std::string string;
 
-void	ft_gnl(string &buffer, string &line);
+void	ft_gnl(string &buffer, string &line, char to);
 string	eraseWhiteSpace(int i, int to, string str);
 int		ft_stoi(std::string str);
 #endif

@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:55:32 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 13:13:09 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 11:43:31 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,19 @@ int		ft_stoi(std::string str)
 	return (ret);
 }
 
-void	ft_gnl(string &buffer, string &line)
+void	ft_gnl(std::string &buffer, std::string &line, char to)
 {
-	size_t					pos;
+	size_t	i;
 
-	pos = buffer.find("\n");
-	if (pos != string::npos)
+	i = buffer.find(to);
+	if (i != std::string::npos)
 	{
-		line = string (buffer, 0, pos++);
-		buffer = buffer.substr(pos);
+		line = std::string (buffer, 0, i++);
+		buffer = buffer.substr(i);
 	}
 	else
 	{
-		if (buffer[buffer.size() - 1] == '\n')
+		if (buffer[buffer.size() - 1] == to)
 			buffer = buffer.substr(buffer.size());
 		else
 		{

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 16:54:50 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 12:38:00 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void			Env::init_server_map(std::string buffer)
 	tmp_conf.clear();
 	while (!buffer.empty())
 	{
-		ft_gnl(buffer, line);
+		ft_gnl(buffer, line, '\n');
 		line = eraseWhiteSpace(0, -1, line);
 		if (!line.compare(0, 6, "server"))
 		{
@@ -191,7 +191,7 @@ void	Env::launchWebserv(void)
 		ret = select(getMaxFd() + 1, &_ReadSet, &_WriteSet, NULL, &_Timeout);
 	for (std::vector<Server>::iterator server(_Servers.begin()); server != _Servers.end(); ++server)
 		{
-		//	handleRequests(server);
+			handleRequests(server);
 			if (FD_ISSET(server->getFd(), &_ReadSet))
 			{
 				try
@@ -206,7 +206,6 @@ void	Env::launchWebserv(void)
 		//	if (!server->_tmp_clients.empty())
 		//		if (FD_ISSET(server->_tmp_clients.front(), &_WriteSet))
 				//erreur 503
-			handleRequests(server);
 		}
 	}
 	_Servers.clear();

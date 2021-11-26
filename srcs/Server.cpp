@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 17:07:57 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 15:37:31 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,8 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 		client->Buf = std::string(Buffer);
 		std::cout << "\nPort:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
-//		client->setFdSets(true, 1);
+		ParseRequest(*client);
+		client->setFdSets(true, 1);
 		return (1);
 	}
 	return (-1);

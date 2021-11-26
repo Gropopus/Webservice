@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:22:42 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/25 17:07:28 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 15:20:34 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef CLIENT_HPP
@@ -32,9 +32,12 @@ class Client
 		int			read_fd;
 		int			write_fd;
 		std::string	Buf;
+		struct Request	request;
+		struct Response	response;
+
 		Client(int filed, fd_set *r, fd_set *w, struct sockaddr_in info);
 		~Client(void);
-//		void	readFile(void);
+		//		void	readFile(void);
 //		void	writeFile(void);
 		void	setFdSets(bool set, int n);
 //		void	setToStandBy(void);
@@ -46,8 +49,6 @@ class Client
 //		int			tmp_fd;
 		fd_set			*rSet;
 		fd_set			*wSet;
-//		struct Request	*req;
-//		struct Response	*res;
 		std::string		ip;
 //		std::string	last_date;
 //		std::string	response;
