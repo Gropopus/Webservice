@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 15:37:31 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/27 12:40:35 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ Server::~Server(void)
  		Clients.clear();
  		close(_Fd);
  		FD_CLR(_Fd, _RSet);
- 		std::cout << "Port:\t[" << GREEN << _Port << NC << + "]\t[";
+ 		std::cout << ft_getDate() << "\t";
+		std::cout << "Port:\t[" << GREEN << _Port << NC << + "]\t[";
 		std::cout << RED << "closed" << NC << "]\n";
  	}
 }
@@ -145,11 +146,13 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 			delete client;
 		if (!ret)
 		{
+			std::cout << ft_getDate() << "\t";
 			std::cout << "Client " << RED << "closed" << NC << " the connection on port:\t[";
 			std::cout << GREEN << _Port << NC << "]\n" << std::endl;
 		}
 		else
 		{
+			std::cout << ft_getDate() << "\t";
 			std::cout << "The connection was \t" << RED << "closed" << NC << " on port:\t[";
 			std::cout << GREEN << _Port << NC << "] due to a recv error." << std::endl;
 		}
@@ -158,7 +161,9 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 	else
 	{
 		client->Buf = std::string(Buffer);
-		std::cout << "\nPort:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << "\n" << ft_getDate() << "\t";
+		std::cout << "Port:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << ft_getDate() << "\t";
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);

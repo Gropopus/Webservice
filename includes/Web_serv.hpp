@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/26 18:29:53 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/27 12:33:08 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,11 +119,20 @@ struct Response
 {
 	std::string							version;
 	std::string							status_code;
-	std::map<std::string, std::string> 	headers;
+	std::string							headers;
+	std::string							content_type;
+	std::string							name;
+	std::string							location;
+	size_t								body_len;
+	//std::map<std::string, std::string> 	headers;
 	std::string							body;
 
 	void	clear()
 	{
+		body_len = 0;
+		location.clear();
+		name.clear();
+		content_type.clear();
 		version.clear();
 		status_code.clear();
 		headers.clear();
@@ -134,7 +143,8 @@ struct Response
 class Server;
 typedef std::string string;
 
-void	ft_gnl(string &buffer, string &line, char to);
-string	eraseWhiteSpace(int i, int to, string str);
-int		ft_stoi(std::string str);
+void			ft_gnl(string &buffer, string &line, char to);
+string			eraseWhiteSpace(int i, int to, string str);
+std::string		ft_getDate(void);
+int				ft_stoi(std::string str);
 #endif
