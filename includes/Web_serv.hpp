@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/29 13:52:53 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 17:00:57 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ struct	t_conf
 		index.clear();
 		root.clear();
 		methods.clear();
-		max_body = 0;
+		max_body = -1;
 		cgi.clear();
 		exec.clear();
 		auth.clear();

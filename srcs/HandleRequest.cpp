@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/29 15:34:11 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 16:59:28 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
@@ -26,6 +26,12 @@ void	buildHeader(Response &response)
 		response.headers += "Server: Webserv\n\n";
 }
 
+void	get_basics(Request &request, Response &response)
+{
+	response.version = request.version;
+	response.location = request.config.location;
+	response.name = request.server_name;
+}
 
 int		isFileDir(std::string path)
 {
@@ -43,15 +49,12 @@ int		isFileDir(std::string path)
 	return (-1);
 }
 
-void	OpenFile(Response &response, Request &request)
+void	openFile(Response &response, Request &request)
 {
 	std::string	path;
 	std::ifstream		file;
 	std::stringstream	buffer;
 
-	response.version = request.version;
-	response.location = request.config.location;
-	response.name = request.server_name;
 	if (request.uri == request.config.location)
 		request.uri += request.config.index;
 	path = request.config.root + request.uri;
@@ -77,7 +80,6 @@ void	OpenFile(Response &response, Request &request)
 		buffer << file.rdbuf();
 		response.body = buffer.str();
 		response.body_len = response.body.size();
-		file.close();
 	}
 	//else if () auto index a gerer;
 	//{
@@ -103,11 +105,10 @@ void	HandleGET(Client &client)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
-	OpenFile(client.response, client.request);
+	openFile(client.response, client.request);
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
 	std::cout << "Reponse:\n"<< CYAN << client.response.res << NC << std::endl;
-//	write(client.fd, client.response.res.c_str(), client.response.res.size());
 }
 
 void	HandlePOST(Client &client)
@@ -120,23 +121,81 @@ void	HandlePOST(Client &client)
 
 void	HandleDELETE(Client &client)
 {
+	std::string			path;
+	std::ifstream		file;
+	std::stringstream	buffer;
+
 	if (client.request.config.methods.find("DELETE") == std::string::npos)
+	{
 		client.response.status_code = NOTALLOWED;
+		path = client.request.errors + "/405.html";
+		buffer << file.rdbuf();
+		client.response.body = buffer.str();
+		client.response.body_len = client.response.body.size();
+		file.close();
+	}
 	else
+	{
 		client.response.status_code = OK;
+		path = client.request.config.root + client.request.uri;
+		if (isFileDir(path))
+		{
+			if (remove(path.c_str()) == 0)
+			{
+				client.response.status_code = NOCONTENT;
+				path = client.request.errors + "/204.html";
+				buffer << file.rdbuf();
+				client.response.body = buffer.str();
+				client.response.body_len = client.response.body.size();
+				file.close();
+			}
+			else
+			{
+				client.response.status_code = FORBIDDEN;
+				path = client.request.errors + "/403.html";
+				buffer << file.rdbuf();
+				client.response.body = buffer.str();
+				client.response.body_len = client.response.body.size();
+				file.close();
+			}
+		}
+	}
 }
 
 void	HandleBAD(Client &client)
 {
+	std::string			path;
+	std::ifstream		file;
+	std::stringstream	buffer;
+
 	if (client.request.method != "HEAD" && client.request.method != "PUT"
 		&& client.request.method != "CONNECT" && client.request.method != "TRACE")
+	{
 		client.response.status_code = NOTIMPLEMENTED;
+		path = client.request.errors + "/501.html";
+		buffer << file.rdbuf();
+		client.response.body = buffer.str();
+		client.response.body_len = client.response.body.size();
+		file.close();
+	}
 	else
+	{
 		client.response.status_code = BADREQUEST;
+		path = client.request.errors + "/400.html";
+		file.open(path.c_str(), std::ifstream::in);
+		client.response.content_type = "text/html";
+		buffer << file.rdbuf();
+		client.response.body = buffer.str();
+		client.response.body_len = client.response.body.size();
+		file.close();
+	}
+	buildHeader(client.response);
+	client.response.res = client.response.headers + client.response.body;
+	std::cout << "Reponse:\n"<< CYAN << client.response.res << NC << std::endl;
 }
-
 void	Client::dispatcher(Client &client)
 {
+	get_basics(client.request, client.response);
 	if (client.request.method == "GET")
 		HandleGET(client);
 	else if (client.request.method == "POST")
