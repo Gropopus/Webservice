@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/27 12:33:08 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 13:52:53 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@
 #define NOCONTENT		"204 No Content"
 #define BADREQUEST		"400 Bad Request"
 #define UNAUTHORIZED	"401 Unauthorized"
+#define FORBIDDEN		"403 Forbidden"
 #define NOTFOUND 		"404 Not Found"
 #define NOTALLOWED		"405 Method Not Allowed"
 #define REQTOOLARGE		"413 Request Entity Too Large"
@@ -102,7 +103,9 @@ struct Request
 	std::string							version;
 	std::map<std::string, std::string> 	headers;
 	std::string							body;
-	std::string status_code;
+	std::string							status_code;
+	std::string							server_name;
+	std::string							errors;
 
 	void	clear()
 	{
@@ -112,6 +115,8 @@ struct Request
 		headers.clear();
 		body.clear();
 		status_code.clear();
+		server_name.clear();
+		errors.clear();
 	}
 };
 
@@ -126,6 +131,7 @@ struct Response
 	size_t								body_len;
 	//std::map<std::string, std::string> 	headers;
 	std::string							body;
+	std::string							res;
 
 	void	clear()
 	{
@@ -137,10 +143,12 @@ struct Response
 		status_code.clear();
 		headers.clear();
 		body.clear();
+		res.clear();
 	}
 };
 
 class Server;
+class Client;
 typedef std::string string;
 
 void			ft_gnl(string &buffer, string &line, char to);

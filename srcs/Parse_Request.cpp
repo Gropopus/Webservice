@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 19:03:55 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 14:26:04 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ bool	getHeader(std::string &buffer, Request &request)
 				value = line.substr(i + 1);
 			if (std::isspace(value[0]) || std::isspace(key[0]) || value.empty() || key.empty())
 				return (false);
-			std::cout << "key: " << key << std::endl;
-			std::cout << "value: " << value << std::endl;
+	//		std::cout << "key: " << key << std::endl;
+	//		std::cout << "value: " << value << std::endl;
  			request.headers[key] = value;
  			request.headers[key].pop_back(); //remove \r
 		}
@@ -78,6 +78,7 @@ void	Server::ParseRequest(Client &client)
 		buffer.erase(buffer.begin());
 	ft_gnl(buffer, request.method, ' ');
 	ft_gnl(buffer, request.uri, ' ');
+//	request.uri.erase(0, 1); erase /
 	ft_gnl(buffer, request.version, '\n');
 	request.version.pop_back();
 	if (request.method.size() == 0 || request.uri.size() == 0
@@ -103,5 +104,9 @@ void	Server::ParseRequest(Client &client)
 	}
 	if (request.valid == true)
 		getConf(*this, request);
+	request.server_name = this->_Name;
+	request.errors = this->_Error;
+//	std::cout << CYAN << "Uri:\t" << request.uri << std::endl;
+//	std::cout << request.config.root << NC << std::endl;
 	client.request = request;
 }

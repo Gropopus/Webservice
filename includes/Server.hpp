@@ -31,6 +31,7 @@ class Server
 		int		getFd(void) const;
 		int		getOpenFd(void);
 		int		readRequest(std::vector<Client*>::iterator it);
+		int		writeResponse(std::vector<Client*>::iterator it);
 		void	init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet);
 		void	acceptConnection(void);
 		void	ParseRequest(Client &client);

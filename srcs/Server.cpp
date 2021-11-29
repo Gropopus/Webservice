@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/27 12:40:35 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 15:34:08 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Server::~Server(void)
 {
  	Client		*client = NULL;
 
- 	if (_Fd != -1)
+	if (_Fd != -1)
  	{
  		for (std::vector<Client*>::iterator it(Clients.begin()); it != Clients.end(); ++it)
  		{
@@ -167,10 +167,47 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
+		client->dispatcher(*client);
 		return (1);
 	}
 	return (-1);
 }
+
+
+int		Server::writeResponse(std::vector<Client*>::iterator it)
+{
+	unsigned long	size = 0;
+	Client			*client = NULL;
+
+	client = *it;
+	size = write(client->fd, client->response.res.c_str(), client->response.res.size());
+	client->response.clear();
+//	client->etFdSets(false, 1);
+	/*	if (size < client->response.size())
+			client->response = client->response.substr(size);
+		else
+		{
+			client->response.clear();
+			client->setToStandBy();
+		}
+		client->last_date = ft_getDate();
+	}
+	if (client->status == STANDBY)
+	{
+		if (getTimeDiff(client->last_date) >= TIMEOUT)
+			client->status = DONE;
+	}
+	if (client->status == DONE)
+	{
+			delete client;
+			Clients.erase(it);
+			return (0);
+	}
+	else
+		_Manage.dispatcher(*client);*/
+	return (1);
+}
+
 
 Server::ServerFailure::ServerFailure(std::string Error)
 {
