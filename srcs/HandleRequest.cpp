@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 16:34:58 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 19:11:39 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,27 @@ int		isFileDir(std::string path)
 	return (-1);
 }
 
+bool	is_only(std::string str)
+{
+	int i = 0;
+
+	while (str[i])
+	{
+		if (str[i] != '/')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 std::string get_path(Request &request)
 {
 	std::string path;
-	if (request.uri == request.config.location && request.uri == "/")
+
+	if ((request.uri == request.config.location
+		&& request.uri == "/") || is_only(request.uri) == true)
 	{
-		request.uri += request.config.index;
+		request.uri = "/" + request.config.index;
 		path = request.config.root + request.uri;
 	}
 	else if (request.uri == request.config.location && request.uri != "/")
@@ -85,6 +100,50 @@ std::string get_path(Request &request)
 	return (path);
 }
 
+std::string		getContent_type(std::string to_find)
+{
+	int i = 0;
+	std::string		types[15];
+	std::string		ret[15];
+	types[0] = ".txt";
+	types[1] = ".bin";
+	types[2] = ".jpeg";
+	types[3] = ".jpg";
+	types[4] = ".html";
+	types[5] = ".htm";
+	types[6] = ".png";
+	types[7] = ".bmp";
+	types[8] = ".pdf";
+	types[9] = ".tar";
+	types[10] = ".json";
+	types[11] = ".css";
+	types[12] = ".js";
+	types[13] = ".mp3";
+	types[14] = ".avi";
+	ret[0] = "text/plain";
+	ret[1] = "application/octet-stream";
+	ret[2] = "image/jpeg";
+	ret[3] = "image/jpeg";
+	ret[4] = "text/html;";
+	ret[5] = "text/html";
+	ret[6] = "image/png";
+	ret[7] = "image/bmp";
+	ret[8] = "application/pdf";
+	ret[9] = "application/x-tar";
+	ret[10] = "application/json";
+	ret[11] = "text/css";
+	ret[12] = "application/javascript";
+	ret[13] = "audio/mpeg";
+	ret[14] = "video/x-msvideo";
+	while (i < 15)
+	{
+		if (to_find == types[i])
+			return (ret[i]);
+		i++;
+	}
+	return ("not found");
+}
+
 void	openFile(Response &response, Request &request)
 {
 	std::string	path;
@@ -97,7 +156,7 @@ void	openFile(Response &response, Request &request)
 		return ;
 	}
 	path = get_path(request);
-	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
+//	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -125,6 +184,7 @@ void	openFile(Response &response, Request &request)
 		getErrors(response, request, "/403.html");
 		response.status_code = NOTFOUND;
 	}
+	response.content_type = getContent_type(path.substr(path.find_last_of('.')));
 }
 
 void	HandleGET(Client &client)
@@ -156,18 +216,17 @@ void	HandleDELETE(Client &client)
 	std::stringstream	buffer;
 
 	client.response.status_code = OK;
-/*	if (client.request.uri == client.request.config.location && client.request.uri == "/")
+	std::cout << YELLOW << client.request.config.methods << NC << std::endl;
+	if (client.request.config.methods.find("DELETE") == std::string::npos)
 	{
-		client.request.uri += client.request.config.index;
-		path = client.request.config.root + client.request.uri;
+		client.response.status_code = NOTALLOWED;
+		getErrors(client.response, client.request, "/405.html");
+		buildHeader(client.response);
+		client.response.res = client.response.headers + client.response.body;
+		return ;
 	}
-	else if (client.request.uri == client.request.config.location && client.request.uri != "/")
-		path = client.request.config.root + "/" + client.request.config.index;
-	else
-		path = client.request.config.root + client.request.uri;*/
 	path = get_path(client.request);
-	std::cout << CYAN << path << NC << std::endl;
-	std::cout << isFileDir(path) << "<=\n";
+	//std::cout << CYAN << path << NC << std::endl;
 	if (isFileDir(path) > 0)
 	{
 		if (remove(path.c_str()) == 0)
@@ -187,6 +246,7 @@ void	HandleDELETE(Client &client)
 		getErrors(client.response, client.request, "/404.html");
 	}
 	buildHeader(client.response);
+//	std::cout << client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
@@ -221,6 +281,7 @@ void	HandleBAD(Client &client)
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
 }
+
 void	Client::dispatcher(Client &client)
 {
 	get_basics(client.request, client.response);

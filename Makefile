@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/30 14:39:37 by gmaris           ###   ########.fr        #
+#    Updated: 2021/11/30 19:11:03 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,7 @@ CC = clang++
 FLAGS = -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
 
 SRCS_DIR = ./srcs/
+
 SRC 		=	Webserv.cpp\
 				Env.cpp\
 				FileParsing.cpp\
@@ -26,13 +27,10 @@ SRC 		=	Webserv.cpp\
 				Utils.cpp\
 				Post_handler.cpp
 
-
-
 INC			=	Web_serv.hpp\
 				Env.hpp\
 				Server.hpp \
 				Client.hpp
-
 
 OBJS_DIR 	= 	./obj/
 OBJ 		= 	$(SRC:.cpp=.o)
@@ -43,6 +41,7 @@ INCS		= 	$(addprefix $(INC_DIR), $(INC))
 INC_FLAG 	= 	-I $(INC_DIR)
 SRCS 		= 	$(addprefix $(SRCS_DIR), $(SRC))
 
+PWD			=	$(shell pwd)
 YELLOW = \033[033m
 GREEN = \033[032m
 BLUE = \033[36m
@@ -59,6 +58,7 @@ $(OBJS_DIR)%.o :	$(SRCS_DIR)%.cpp $(INCS)
 $(NAME): $(OBJS) Makefile $(INCS)
 	@$(CC) $(INC_FLAG) $(FLAGS) -o $(NAME) $(OBJS)
 	@echo "[$(GREEN)$(NAME) compiled$(RESET)]"
+	@cat ./conf/testy.conf | sed "s=PWD=$(PWD)=g" > ./conf/correct.conf
 
 all: $(NAME)
 
