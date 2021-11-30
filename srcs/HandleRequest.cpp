@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   HandleRequest.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 13:00:27 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 14:52:38 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "Client.hpp"
+
 #include "Web_serv.hpp"
+#include "Client.hpp"
 
 void	buildHeader(Response &response)
 {
@@ -131,6 +132,8 @@ void	HandlePOST(Client &client)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
+	std::cout << BLUE << "\t====try" << NC << std::endl;
+	//build post respond
 }
 
 void	HandleDELETE(Client &client)
