@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/26 17:17:35 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 17:00:57 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@
 #define NOCONTENT		"204 No Content"
 #define BADREQUEST		"400 Bad Request"
 #define UNAUTHORIZED	"401 Unauthorized"
+#define FORBIDDEN		"403 Forbidden"
 #define NOTFOUND 		"404 Not Found"
 #define NOTALLOWED		"405 Method Not Allowed"
 #define REQTOOLARGE		"413 Request Entity Too Large"
@@ -84,7 +85,7 @@ struct	t_conf
 		index.clear();
 		root.clear();
 		methods.clear();
-		max_body = 0;
+		max_body = -1;
 		cgi.clear();
 		exec.clear();
 		auth.clear();
@@ -102,6 +103,9 @@ struct Request
 	std::string							version;
 	std::map<std::string, std::string> 	headers;
 	std::string							body;
+	std::string							status_code;
+	std::string							server_name;
+	std::string							errors;
 
 	void	clear()
 	{
@@ -110,6 +114,9 @@ struct Request
 		version.clear();
 		headers.clear();
 		body.clear();
+		status_code.clear();
+		server_name.clear();
+		errors.clear();
 	}
 };
 
@@ -117,22 +124,35 @@ struct Response
 {
 	std::string							version;
 	std::string							status_code;
-	std::map<std::string, std::string> 	headers;
+	std::string							headers;
+	std::string							content_type;
+	std::string							name;
+	std::string							location;
+	size_t								body_len;
+	//std::map<std::string, std::string> 	headers;
 	std::string							body;
+	std::string							res;
 
 	void	clear()
 	{
+		body_len = 0;
+		location.clear();
+		name.clear();
+		content_type.clear();
 		version.clear();
 		status_code.clear();
 		headers.clear();
 		body.clear();
+		res.clear();
 	}
 };
 
 class Server;
+class Client;
 typedef std::string string;
 
-void	ft_gnl(string &buffer, string &line, char to);
-string	eraseWhiteSpace(int i, int to, string str);
-int		ft_stoi(std::string str);
+void			ft_gnl(string &buffer, string &line, char to);
+string			eraseWhiteSpace(int i, int to, string str);
+std::string		ft_getDate(void);
+int				ft_stoi(std::string str);
 #endif

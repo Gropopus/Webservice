@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:55:32 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 11:43:31 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/27 12:31:34 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,3 +65,18 @@ string	eraseWhiteSpace(int i, int to, string str)
 	}
 	return (str);
 }
+
+std::string		ft_getDate()
+{
+	struct timeval	time;
+	struct tm		*tm;
+	char			buffer[BUFFER_SIZE + 1];
+	int				ret;
+
+	std::memset(buffer, 0, BUFFER_SIZE + 1);
+	gettimeofday(&time, NULL);
+	tm = localtime(&time.tv_sec);
+	ret = strftime(buffer, BUFFER_SIZE, "%a, %d %b %Y %T %Z", tm);
+	return (buffer);
+}
+

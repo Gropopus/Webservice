@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/26 12:17:36 by thsembel         ###   ########.fr        #
+#    Updated: 2021/11/30 10:49:55 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ SRC 		=	Webserv.cpp\
 				Server.cpp \
 				Client.cpp \
 				Parse_Request.cpp \
+				HandleRequest.cpp \
 				Utils.cpp
 
 
@@ -50,7 +51,7 @@ RESET = \033[0m
 
 $(OBJS_DIR)%.o :	$(SRCS_DIR)%.cpp $(INCS)
 	@mkdir -p $(OBJS_DIR)
-	@echo "$(YELLOW)$(notdir $(basename $@))...$(RESET)\t\t[$(GREEN)OK$(RESET)]"
+	@echo "[$(GREEN)OK$(RESET)]\t$(YELLOW)$(notdir $(basename $@))..."
 	@$(CC) -I./includes $(FLAGS) -c $< -o $@
 
 $(NAME): $(OBJS) Makefile $(INCS)

@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:22:42 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 17:49:25 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/29 13:25:53 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef CLIENT_HPP
@@ -35,6 +35,7 @@ class Client
 		~Client(void);
 		//		void	readFile(void);
 //		void	writeFile(void);
+		void	dispatcher(Client &client);
 		void	setFdSets(bool set, int n);
 //		void	setToStandBy(void);
 

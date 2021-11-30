@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 18:23:42 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 14:32:50 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Server::~Server(void)
 {
  	Client		*client = NULL;
 
- 	if (_Fd != -1)
+	if (_Fd != -1)
  	{
  		for (std::vector<Client*>::iterator it(Clients.begin()); it != Clients.end(); ++it)
  		{
@@ -36,7 +36,8 @@ Server::~Server(void)
  		Clients.clear();
  		close(_Fd);
  		FD_CLR(_Fd, _RSet);
- 		std::cout << "Port:\t[" << GREEN << _Port << NC << + "]\t[";
+ 		std::cout << ft_getDate() << "\t";
+		std::cout << "Port:\t[" << GREEN << _Port << NC << + "]\t[";
 		std::cout << RED << "closed" << NC << "]\n";
  	}
 }
@@ -145,11 +146,13 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 			delete client;
 		if (!ret)
 		{
+			std::cout << ft_getDate() << "\t";
 			std::cout << "Client " << RED << "closed" << NC << " the connection on port:\t[";
 			std::cout << GREEN << _Port << NC << "]\n" << std::endl;
 		}
 		else
 		{
+			std::cout << ft_getDate() << "\t";
 			std::cout << "The connection was \t" << RED << "closed" << NC << " on port:\t[";
 			std::cout << GREEN << _Port << NC << "] due to a recv error." << std::endl;
 		}
@@ -158,15 +161,55 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 	else
 	{
 		client->Buf = std::string(Buffer);
-		std::cout << "\nPort:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << "\n" << ft_getDate() << "\t";
+		std::cout << "Port:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << ft_getDate() << "\t";
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
-		post_handler(client);
+		client->dispatcher(*client);
 		return (1);
 	}
 	return (-1);
 }
+
+
+int		Server::writeResponse(std::vector<Client*>::iterator it)
+{
+	unsigned long	size = 0;
+	Client			*client = NULL;
+
+	client = *it;
+	if (client->response.res != "")
+		std::cout << "Reponse:\n"<< CYAN << client->response.res << NC << std::endl;
+	size = write(client->fd, client->response.res.c_str(), client->response.res.size());
+	client->response.clear();
+//	client->etFdSets(false, 1);
+	/*	if (size < client->response.size())
+			client->response = client->response.substr(size);
+		else
+		{
+			client->response.clear();
+			client->setToStandBy();
+		}
+		client->last_date = ft_getDate();
+	}
+	if (client->status == STANDBY)
+	{
+		if (getTimeDiff(client->last_date) >= TIMEOUT)
+			client->status = DONE;
+	}
+	if (client->status == DONE)
+	{
+			delete client;
+			Clients.erase(it);
+			return (0);
+	}
+	else
+		_Manage.dispatcher(*client);*/
+	return (1);
+}
+
 
 Server::ServerFailure::ServerFailure(std::string Error)
 {
