@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Parse_Request.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 10:53:23 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 16:53:32 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ bool	getHeader(std::string &buffer, Request &request)
 		else
 			return (false);
 	}
+	request.body = buffer;
 	return (true);
 }
 
