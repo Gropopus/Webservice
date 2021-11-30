@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 16:50:34 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 17:20:10 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ std::string get_path(Request &request)
 	{
 		request.uri = "/" + request.config.index;
 		path = request.config.root + request.uri;
-		std::cout << path << std::endl;
 	}
 	else if (request.uri == request.config.location && request.uri != "/")
 		path = request.config.root + "/" + request.config.index;
@@ -113,7 +112,7 @@ void	openFile(Response &response, Request &request)
 		return ;
 	}
 	path = get_path(request);
-	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
+//	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -172,18 +171,17 @@ void	HandleDELETE(Client &client)
 	std::stringstream	buffer;
 
 	client.response.status_code = OK;
-/*	if (client.request.uri == client.request.config.location && client.request.uri == "/")
+	std::cout << YELLOW << client.request.config.methods << NC << std::endl;
+	if (client.request.config.methods.find("DELETE") == std::string::npos)
 	{
-		client.request.uri += client.request.config.index;
-		path = client.request.config.root + client.request.uri;
+		client.response.status_code = NOTALLOWED;
+		getErrors(client.response, client.request, "/405.html");
+		buildHeader(client.response);
+		client.response.res = client.response.headers + client.response.body;
+		return ;
 	}
-	else if (client.request.uri == client.request.config.location && client.request.uri != "/")
-		path = client.request.config.root + "/" + client.request.config.index;
-	else
-		path = client.request.config.root + client.request.uri;*/
 	path = get_path(client.request);
 	std::cout << CYAN << path << NC << std::endl;
-	std::cout << isFileDir(path) << "<=\n";
 	if (isFileDir(path) > 0)
 	{
 		if (remove(path.c_str()) == 0)
