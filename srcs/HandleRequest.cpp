@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 11:05:18 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 12:36:53 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
@@ -55,9 +55,17 @@ void	openFile(Response &response, Request &request)
 	std::ifstream		file;
 	std::stringstream	buffer;
 
-	if (request.uri == request.config.location)
+	std::cout << RED << request.config.location << NC << "\n";
+	if (request.uri == request.config.location && request.uri == "/")
+	{
 		request.uri += request.config.index;
-	path = request.config.root + request.uri;
+		path = request.config.root + request.uri;
+	}
+	else if (request.uri == request.config.location && request.uri != "/")
+		path = request.config.root + "/" + request.config.index;
+	else
+		path = request.config.root + request.uri;
+//	std::cout << RED << path << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -108,7 +116,6 @@ void	HandleGET(Client &client)
 	openFile(client.response, client.request);
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
-	std::cout << "Reponse:\n"<< CYAN << client.response.res << NC << std::endl;
 }
 
 void	HandlePOST(Client &client)
@@ -125,44 +132,48 @@ void	HandleDELETE(Client &client)
 	std::ifstream		file;
 	std::stringstream	buffer;
 
-	if (client.request.config.methods.find("DELETE") == std::string::npos)
+	client.response.status_code = OK;
+	if (client.request.uri == client.request.config.location)
+		path = client.request.config.root + "/" + client.request.config.index;
+//	else
+//	path = client.request.config.root + client.request.uri;
+	std::cout << CYAN << path << NC << std::endl;
+	if (isFileDir(path))
 	{
-		client.response.status_code = NOTALLOWED;
-		path = client.request.errors + "/405.html";
+		if (remove(path.c_str()) == 0)
+		{
+			client.response.status_code = NOCONTENT;
+			path = client.request.errors + "/204.html";
+			file.open(path.c_str(), std::ifstream::in);
+			buffer << file.rdbuf();
+			std::cout << RED << path << NC << std::endl;
+			client.response.body = buffer.str();
+			client.response.body_len = client.response.body.size();
+			file.close();
+		}
+		else
+		{
+			client.response.status_code = FORBIDDEN;
+			path = client.request.errors + "/403.html";
+			file.open(path.c_str(), std::ifstream::in);
+			buffer << file.rdbuf();
+			client.response.body = buffer.str();
+			client.response.body_len = client.response.body.size();
+			file.close();
+		}
+	}
+	else
+	{
+		client.response.status_code = NOTFOUND;	
+		path = client.request.errors + "/404.html";
+		file.open(path.c_str(), std::ifstream::in);
 		buffer << file.rdbuf();
 		client.response.body = buffer.str();
 		client.response.body_len = client.response.body.size();
 		file.close();
 	}
-	else
-	{
-		client.response.status_code = OK;
-		path = client.request.config.root + client.request.uri;
-		std::cout << CYAN << "Ici\n" << NC << std::endl;
-		if (isFileDir(path))
-		{
-			if (remove(path.c_str()) == 0)
-			{
-				client.response.status_code = NOCONTENT;
-				path = client.request.errors + "/204.html";
-				buffer << file.rdbuf();
-				client.response.body = buffer.str();
-				client.response.body_len = client.response.body.size();
-				file.close();
-				return ;
-			}
-			else
-			{
-				client.response.status_code = FORBIDDEN;
-				path = client.request.errors + "/403.html";
-				buffer << file.rdbuf();
-				client.response.body = buffer.str();
-				client.response.body_len = client.response.body.size();
-				file.close();
-				return ;
-			}
-		}
-	}
+	buildHeader(client.response);
+	client.response.res = client.response.headers + client.response.body;
 }
 
 void	HandleBAD(Client &client)
@@ -176,6 +187,7 @@ void	HandleBAD(Client &client)
 	{
 		client.response.status_code = NOTIMPLEMENTED;
 		path = client.request.errors + "/501.html";
+		file.open(path.c_str(), std::ifstream::in);
 		buffer << file.rdbuf();
 		client.response.body = buffer.str();
 		client.response.body_len = client.response.body.size();
@@ -194,7 +206,6 @@ void	HandleBAD(Client &client)
 	}
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
-	std::cout << "Reponse:\n"<< CYAN << client.response.res << NC << std::endl;
 }
 void	Client::dispatcher(Client &client)
 {
