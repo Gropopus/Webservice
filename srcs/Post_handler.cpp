@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/30 16:01:05 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 16:40:05 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static std::string _getPart(const string &body, const string &boundary)
 	end_str += boundary;
 
 	start = body.find(start_str) + start_str.length();
-	end = body.find(end_str);
+	end = body.find(end_str, start + 1);
 	std::cout << "end = " << end_str << std::endl;
 	std::cout << CYAN << "start = " << start << "  end = " << end << std::endl;
 	std::cout << BLUE;

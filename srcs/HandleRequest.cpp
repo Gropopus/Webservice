@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 15:17:09 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 16:34:58 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,18 +65,9 @@ int		isFileDir(std::string path)
 	return (-1);
 }
 
-void	openFile(Response &response, Request &request)
+std::string get_path(Request &request)
 {
-	std::string	path;
-	std::ifstream		file;
-	std::stringstream	buffer;
-
-	if (response.status_code == NOTALLOWED)
-	{
-		std::cout << "ici";
-		getErrors(response, request, "/405.html");
-		return ;
-	}
+	std::string path;
 	if (request.uri == request.config.location && request.uri == "/")
 	{
 		request.uri += request.config.index;
@@ -85,7 +76,27 @@ void	openFile(Response &response, Request &request)
 	else if (request.uri == request.config.location && request.uri != "/")
 		path = request.config.root + "/" + request.config.index;
 	else
-		path = request.config.root + request.uri;
+	{
+		if (request.uri.find(request.config.location) != std::string::npos && request.config.location != "/")
+			path = request.config.root + request.uri.substr(request.uri.find_last_of('/'));
+		else
+			path = request.config.root + request.uri;
+	}
+	return (path);
+}
+
+void	openFile(Response &response, Request &request)
+{
+	std::string	path;
+	std::ifstream		file;
+	std::stringstream	buffer;
+
+	if (response.status_code == NOTALLOWED)
+	{
+		getErrors(response, request, "/405.html");
+		return ;
+	}
+	path = get_path(request);
 	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
@@ -101,7 +112,6 @@ void	openFile(Response &response, Request &request)
 		// gerer la langue ici
 		buffer << file.rdbuf();
 		response.body = buffer.str();
-	//	std::cout << response.body << std::endl;
 		response.body_len = response.body.size();
 		file.close();
 	}
@@ -125,7 +135,7 @@ void	HandleGET(Client &client)
 		client.response.status_code = OK;
 	openFile(client.response, client.request);
 	buildHeader(client.response);
-	std::cout << client.response.headers << std::endl;
+	std::cout<< client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
@@ -146,7 +156,7 @@ void	HandleDELETE(Client &client)
 	std::stringstream	buffer;
 
 	client.response.status_code = OK;
-	if (client.request.uri == client.request.config.location && client.request.uri == "/")
+/*	if (client.request.uri == client.request.config.location && client.request.uri == "/")
 	{
 		client.request.uri += client.request.config.index;
 		path = client.request.config.root + client.request.uri;
@@ -154,7 +164,8 @@ void	HandleDELETE(Client &client)
 	else if (client.request.uri == client.request.config.location && client.request.uri != "/")
 		path = client.request.config.root + "/" + client.request.config.index;
 	else
-		path = client.request.config.root + client.request.uri;
+		path = client.request.config.root + client.request.uri;*/
+	path = get_path(client.request);
 	std::cout << CYAN << path << NC << std::endl;
 	std::cout << isFileDir(path) << "<=\n";
 	if (isFileDir(path) > 0)
