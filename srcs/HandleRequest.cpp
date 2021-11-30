@@ -6,7 +6,11 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2021/11/30 14:52:38 by gmaris           ###   ########.fr       */
+=======
+/*   Updated: 2021/11/30 14:49:42 by thsembel         ###   ########.fr       */
+>>>>>>> 34c7abe11193f149a1cad178e423d8a753fac059
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +75,12 @@ void	openFile(Response &response, Request &request)
 	std::ifstream		file;
 	std::stringstream	buffer;
 
-	std::cout << RED << request.config.location << NC << "\n";
+	if (response.status_code == NOTALLOWED)
+	{
+		std::cout << "ici";
+		getErrors(response, request, "/405.html");
+		return ;
+	}
 	if (request.uri == request.config.location && request.uri == "/")
 	{
 		request.uri += request.config.index;
@@ -81,7 +90,7 @@ void	openFile(Response &response, Request &request)
 		path = request.config.root + "/" + request.config.index;
 	else
 		path = request.config.root + request.uri;
-//	std::cout << RED << path << NC << "\n";
+	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -93,16 +102,10 @@ void	openFile(Response &response, Request &request)
 			file.open(path.c_str(), std::ifstream::in);
 			response.content_type = "text/html";
 		}
-		else if (file.is_open() == false && response.status_code == NOTALLOWED)
-		{
-			response.status_code = NOTALLOWED;
-			file.close();
-			path = request.errors + "/405.html";
-			file.open(path.c_str(), std::ifstream::in);
-			response.content_type = "text/html";
-		}
+		// gerer la langue ici
 		buffer << file.rdbuf();
 		response.body = buffer.str();
+		std::cout << response.body << std::endl;
 		response.body_len = response.body.size();
 		file.close();
 	}
@@ -112,7 +115,10 @@ void	openFile(Response &response, Request &request)
 	//		response.content_type = "text/html";
 	//}
 	else
+	{
 		getErrors(response, request, "/403.html");
+		response.status_code = NOTFOUND;
+	}
 }
 
 void	HandleGET(Client &client)
