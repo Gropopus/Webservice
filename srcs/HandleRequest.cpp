@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 14:49:42 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 16:22:04 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
@@ -72,7 +72,6 @@ void	openFile(Response &response, Request &request)
 
 	if (response.status_code == NOTALLOWED)
 	{
-		std::cout << "ici";
 		getErrors(response, request, "/405.html");
 		return ;
 	}
@@ -84,8 +83,13 @@ void	openFile(Response &response, Request &request)
 	else if (request.uri == request.config.location && request.uri != "/")
 		path = request.config.root + "/" + request.config.index;
 	else
-		path = request.config.root + request.uri;
-	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
+	{
+		if (request.uri.find(request.config.location) != std::string::npos && request.config.location != "/")
+			path = request.config.root + request.uri.substr(request.uri.find_last_of('/'));
+		else
+			path = request.config.root + request.uri;
+	}
+		std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -100,7 +104,6 @@ void	openFile(Response &response, Request &request)
 		// gerer la langue ici
 		buffer << file.rdbuf();
 		response.body = buffer.str();
-		std::cout << response.body << std::endl;
 		response.body_len = response.body.size();
 		file.close();
 	}
@@ -124,6 +127,7 @@ void	HandleGET(Client &client)
 		client.response.status_code = OK;
 	openFile(client.response, client.request);
 	buildHeader(client.response);
+	std::cout<< client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
