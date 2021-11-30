@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/26 15:37:31 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/26 18:23:42 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,6 +162,7 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
+		post_handler(client);
 		return (1);
 	}
 	return (-1);
