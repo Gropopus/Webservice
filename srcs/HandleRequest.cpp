@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 16:34:58 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 16:50:34 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,29 @@ int		isFileDir(std::string path)
 	return (-1);
 }
 
+bool	is_only(std::string str)
+{
+	int i = 0;
+
+	while (str[i])
+	{
+		if (str[i] != '/')
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 std::string get_path(Request &request)
 {
 	std::string path;
-	if (request.uri == request.config.location && request.uri == "/")
+
+	if ((request.uri == request.config.location
+		&& request.uri == "/") || is_only(request.uri) == true)
 	{
-		request.uri += request.config.index;
+		request.uri = "/" + request.config.index;
 		path = request.config.root + request.uri;
+		std::cout << path << std::endl;
 	}
 	else if (request.uri == request.config.location && request.uri != "/")
 		path = request.config.root + "/" + request.config.index;
