@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/30 15:15:21 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 19:08:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,5 +155,7 @@ void			ft_gnl(string &buffer, string &line, char to);
 string			eraseWhiteSpace(int i, int to, string str);
 std::string		ft_getDate(void);
 int				ft_stoi(std::string str);
+
 void			post_handler(Client &client);
+std::string		get_path(Request &request);
 #endif
