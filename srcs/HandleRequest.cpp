@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/29 16:59:28 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 11:05:18 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
@@ -138,6 +138,7 @@ void	HandleDELETE(Client &client)
 	{
 		client.response.status_code = OK;
 		path = client.request.config.root + client.request.uri;
+		std::cout << CYAN << "Ici\n" << NC << std::endl;
 		if (isFileDir(path))
 		{
 			if (remove(path.c_str()) == 0)
@@ -148,6 +149,7 @@ void	HandleDELETE(Client &client)
 				client.response.body = buffer.str();
 				client.response.body_len = client.response.body.size();
 				file.close();
+				return ;
 			}
 			else
 			{
@@ -157,6 +159,7 @@ void	HandleDELETE(Client &client)
 				client.response.body = buffer.str();
 				client.response.body_len = client.response.body.size();
 				file.close();
+				return ;
 			}
 		}
 	}

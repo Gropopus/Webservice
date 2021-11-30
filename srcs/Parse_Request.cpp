@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/29 14:26:04 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 10:53:23 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ void	getConf(Server &server, Request &request)
 	}
 	if (ret == 0)
 		request.config = server.config[0];
-	std::cout << CYAN << request.config.location << NC << std::endl;
 }
 
 void	Server::ParseRequest(Client &client)
@@ -106,7 +105,5 @@ void	Server::ParseRequest(Client &client)
 		getConf(*this, request);
 	request.server_name = this->_Name;
 	request.errors = this->_Error;
-//	std::cout << CYAN << "Uri:\t" << request.uri << std::endl;
-//	std::cout << request.config.root << NC << std::endl;
 	client.request = request;
 }
