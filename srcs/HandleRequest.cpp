@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 12:36:53 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 13:00:27 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "Client.hpp"
@@ -33,11 +33,26 @@ void	get_basics(Request &request, Response &response)
 	response.name = request.server_name;
 }
 
+void	getErrors(Response &response, Request &request, std::string error)
+{
+	std::string	path;
+	std::ifstream		file;
+	std::stringstream	buffer;
+
+	path = request.errors + error;
+	file.open(path.c_str(), std::ifstream::in);
+	buffer << file.rdbuf();
+	response.body = buffer.str();
+	response.body_len = response.body.size();
+	file.close();
+	response.content_type = "text/html";
+}
+
 int		isFileDir(std::string path)
 {
 	struct stat s;
 
-	if (stat(path.c_str(), &s) == 0 )
+	if (stat(path.c_str(), &s) == 0)
 	{
 		if (s.st_mode & S_IFREG)
 			return (1);
@@ -88,6 +103,7 @@ void	openFile(Response &response, Request &request)
 		buffer << file.rdbuf();
 		response.body = buffer.str();
 		response.body_len = response.body.size();
+		file.close();
 	}
 	//else if () auto index a gerer;
 	//{
@@ -95,16 +111,7 @@ void	openFile(Response &response, Request &request)
 	//		response.content_type = "text/html";
 	//}
 	else
-	{
-		response.status_code = FORBIDDEN;
-		path = request.errors + "/403.html";
-		file.open(path.c_str(), std::ifstream::in);
-		buffer << file.rdbuf();
-		response.body = buffer.str();
-		response.body_len = response.body.size();
-		file.close();
-		response.content_type = "text/html";
-	}
+		getErrors(response, request, "/403.html");
 }
 
 void	HandleGET(Client &client)
@@ -133,44 +140,34 @@ void	HandleDELETE(Client &client)
 	std::stringstream	buffer;
 
 	client.response.status_code = OK;
-	if (client.request.uri == client.request.config.location)
+	if (client.request.uri == client.request.config.location && client.request.uri == "/")
+	{
+		client.request.uri += client.request.config.index;
+		path = client.request.config.root + client.request.uri;
+	}
+	else if (client.request.uri == client.request.config.location && client.request.uri != "/")
 		path = client.request.config.root + "/" + client.request.config.index;
-//	else
-//	path = client.request.config.root + client.request.uri;
+	else
+		path = client.request.config.root + client.request.uri;
 	std::cout << CYAN << path << NC << std::endl;
-	if (isFileDir(path))
+	std::cout << isFileDir(path) << "<=\n";
+	if (isFileDir(path) > 0)
 	{
 		if (remove(path.c_str()) == 0)
 		{
 			client.response.status_code = NOCONTENT;
-			path = client.request.errors + "/204.html";
-			file.open(path.c_str(), std::ifstream::in);
-			buffer << file.rdbuf();
-			std::cout << RED << path << NC << std::endl;
-			client.response.body = buffer.str();
-			client.response.body_len = client.response.body.size();
-			file.close();
+			getErrors(client.response, client.request, "/204.html");
 		}
 		else
 		{
 			client.response.status_code = FORBIDDEN;
-			path = client.request.errors + "/403.html";
-			file.open(path.c_str(), std::ifstream::in);
-			buffer << file.rdbuf();
-			client.response.body = buffer.str();
-			client.response.body_len = client.response.body.size();
-			file.close();
+			getErrors(client.response, client.request, "/403.html");
 		}
 	}
 	else
 	{
 		client.response.status_code = NOTFOUND;	
-		path = client.request.errors + "/404.html";
-		file.open(path.c_str(), std::ifstream::in);
-		buffer << file.rdbuf();
-		client.response.body = buffer.str();
-		client.response.body_len = client.response.body.size();
-		file.close();
+		getErrors(client.response, client.request, "/404.html");
 	}
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
