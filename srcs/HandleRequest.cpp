@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 19:11:39 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/11/30 22:34:05 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void	openFile(Response &response, Request &request)
 		return ;
 	}
 	path = get_path(request);
-//	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
+	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
 		file.open(path.c_str(), std::ifstream::in);
@@ -182,8 +182,9 @@ void	openFile(Response &response, Request &request)
 	else
 	{
 		getErrors(response, request, "/403.html");
-		response.status_code = NOTFOUND;
+		response.status_code = FORBIDDEN;
 	}
+	std::cout << response.res;
 	response.content_type = getContent_type(path.substr(path.find_last_of('.')));
 }
 

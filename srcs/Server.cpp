@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 16:33:52 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/11/30 22:25:02 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,8 +180,8 @@ int		Server::writeResponse(std::vector<Client*>::iterator it)
 	Client			*client = NULL;
 
 	client = *it;
-//	if (client->response.res != "")
-//		std::cout << "Reponse:\n"<< CYAN << client->response.res << NC << std::endl;
+	if (client->response.res != "")
+		std::cout << "Reponse:\n"<< CYAN << client->response.res << NC << std::endl;
 	size = write(client->fd, client->response.res.c_str(), client->response.res.size());
 	client->response.clear();
 //	client->etFdSets(false, 1);
