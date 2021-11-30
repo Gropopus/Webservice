@@ -6,11 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2021/11/30 14:52:38 by gmaris           ###   ########.fr       */
-=======
-/*   Updated: 2021/11/30 14:49:42 by thsembel         ###   ########.fr       */
->>>>>>> 34c7abe11193f149a1cad178e423d8a753fac059
+/*   Updated: 2021/11/30 15:17:09 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +101,7 @@ void	openFile(Response &response, Request &request)
 		// gerer la langue ici
 		buffer << file.rdbuf();
 		response.body = buffer.str();
-		std::cout << response.body << std::endl;
+	//	std::cout << response.body << std::endl;
 		response.body_len = response.body.size();
 		file.close();
 	}
@@ -129,6 +125,7 @@ void	HandleGET(Client &client)
 		client.response.status_code = OK;
 	openFile(client.response, client.request);
 	buildHeader(client.response);
+	std::cout << client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
@@ -139,7 +136,7 @@ void	HandlePOST(Client &client)
 	else
 		client.response.status_code = OK;
 	std::cout << BLUE << "\t====try" << NC << std::endl;
-	//build post respond
+	post_handler(client); //build post respond
 }
 
 void	HandleDELETE(Client &client)
