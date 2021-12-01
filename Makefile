@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/11/30 19:11:03 by thsembel         ###   ########.fr        #
+#    Updated: 2021/12/01 15:53:25 by gmaris           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,9 +55,11 @@ $(OBJS_DIR)%.o :	$(SRCS_DIR)%.cpp $(INCS)
 	@$(CC) -I./includes $(FLAGS) -c $< -o $@
 	@echo "\t\t[$(GREEN)OK$(RESET)]"
 
-$(NAME): $(OBJS) Makefile $(INCS)
+$(NAME): $(OBJS) Makefile $(INCS) ./conf/correct.conf
 	@$(CC) $(INC_FLAG) $(FLAGS) -o $(NAME) $(OBJS)
 	@echo "[$(GREEN)$(NAME) compiled$(RESET)]"
+
+./conf/correct.conf:
 	@cat ./conf/testy.conf | sed "s=PWD=$(PWD)=g" > ./conf/correct.conf
 
 all: $(NAME)
@@ -67,8 +69,9 @@ clean:
 	@rm -rf $(OBJS_DIR)
 
 fclean: clean
-	@echo "Cleaning: $(NAME)"
+	@echo "Cleaning: $(NAME) && correct.conf"
 	@rm -f $(NAME)
+	@rm -f ./conf/correct.conf
 
 re: fclean all
 
