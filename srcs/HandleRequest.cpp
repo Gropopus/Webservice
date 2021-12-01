@@ -6,7 +6,8 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 15:46:01 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 15:47:54 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 15:45:14 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +248,10 @@ void	openFile(Response &response, Request &request)
 		response.status_code = FORBIDDEN;
 	}
 	std::cout << response.res;
-	response.content_type = getContent_type(path.substr(path.find_last_of('.')));
+	if (path.find_last_of('.') != path.npos)
+		response.content_type = getContent_type(path.substr(path.find_last_of('.')));
+	else
+		response.content_type = "not found";
 }
 
 void	HandleGET(Client &client)

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 16:53:32 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 15:32:39 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,9 @@ void	getConf(Server &server, Request &request)
 
 	while (it != server.config.end())
 	{
-		if (request.uri.find((*it).location) != std::string::npos)
+		if (request.uri.find((*it).location) != std::string::npos && (
+			request.uri[request.uri.find((*it).location) + 1] == '\0' ||
+			request.uri[request.uri.find((*it).location) + 1] == '/'))
 		{
 			request.config = (*it);
 			ret++;
