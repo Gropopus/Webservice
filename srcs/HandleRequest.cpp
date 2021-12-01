@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 15:45:14 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 15:50:43 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,6 @@ void	HandlePOST(Client &client)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
-	std::cout << BLUE << "\t====try" << NC << std::endl;
 	post_handler(client); //build post respond
 }
 
