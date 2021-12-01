@@ -6,11 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2021/12/01 16:43:14 by gmaris           ###   ########.fr       */
-=======
-/*   Updated: 2021/12/01 17:32:09 by thsembel         ###   ########.fr       */
->>>>>>> 666f2321cc1c60f176b73debfdfb43eba1730e03
+/*   Updated: 2021/12/01 17:51:44 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +42,6 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/stat.h>
 #include <sys/time.h>
-
 #define BLACK   "\033[30m"      /* Black */
 #define RED     "\033[31m"      /* Red */
 #define GREEN   "\033[32m"      /* Green */
