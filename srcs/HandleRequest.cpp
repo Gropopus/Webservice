@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 22:34:05 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 01:54:31 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,17 @@ std::string get_path(Request &request)
 {
 	std::string path;
 
+	while (request.uri.back() == '/')
+		request.uri.pop_back();
+	std::cout << request.uri;
 	if ((request.uri == request.config.location
 		&& request.uri == "/") || is_only(request.uri) == true)
 	{
 		request.uri = "/" + request.config.index;
 		path = request.config.root + request.uri;
 	}
-	else if (request.uri == request.config.location && request.uri != "/")
+	else if ((request.uri == request.config.location
+	|| request.uri == request.config.location + "/") && request.uri != "/")
 		path = request.config.root + "/" + request.config.index;
 	else
 	{
