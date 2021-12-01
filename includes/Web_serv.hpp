@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 17:32:09 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:51:44 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/stat.h>
 #include <sys/time.h>
-
 #define BLACK   "\033[30m"      /* Black */
 #define RED     "\033[31m"      /* Red */
 #define GREEN   "\033[32m"      /* Green */
@@ -57,6 +56,7 @@
 #define OK 				"200 OK"
 #define CREATED			"201 Created"
 #define NOCONTENT		"204 No Content"
+#define NOTMODIFIED		"304 Not Modified"
 #define BADREQUEST		"400 Bad Request"
 #define UNAUTHORIZED	"401 Unauthorized"
 #define FORBIDDEN		"403 Forbidden"

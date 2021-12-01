@@ -45,4 +45,4 @@ client{
 	repsond;
 }
 
-scrut
+CGI for get if file ask en with pl;
