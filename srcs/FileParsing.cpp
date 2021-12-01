@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:54:56 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 12:36:13 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 16:13:40 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,10 @@ void	fill_conf(Server &serv, t_conf &conf, std::string &key, std::string &value)
 	else if (key == "php")
 		conf.php = value;
 	else if (key == "listen")
+	{
 		serv._Port = ft_stoi(value);
+		conf.port = ft_stoi(value);
+	}
 	else if (key == "error")
 		serv._Error = value;
 	else if (key == "server_name")
