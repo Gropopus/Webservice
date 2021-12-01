@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 17:42:20 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 19:41:35 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,23 @@
 # include "Client.hpp"
 # include "Server.hpp"
 
+
+
 static std::string _get_path(Request &request)
 {
 	std::string path;
 
-	if (request.uri.find(request.config.location) != std::string::npos && request.config.location != "/")
-		path = request.config.root + request.uri.substr(request.uri.find_last_of('/'));
+	if (request.uri == request.config.location || request.uri == request.config.location + "/")
+		path = request.config.root + "/";
 	else
-		path = request.config.root + request.uri;
-	
-	if (path.back() != '/')
-		path += "/";
+	{
+		if (request.uri.find(request.config.location)  == 0)
+			path = request.config.root + "/" + request.uri.substr(request.config.location.length());
+		else
+			std::cout << RED << "THIS SHOULD NEVER HAPPEND WTF FIX THIS SHIT CODE" << NC << std::endl;
+	}
 	return (path);
 }
-
 static string	_getFileName(string &elem)
 {
 	size_t start;
@@ -40,6 +43,35 @@ static string	_getFileName(string &elem)
 	return (name);
 }
 
+static string	_getUriName(Request &request)
+{
+	std::string name;
+	name = request.uri.substr(request.uri.find_last_of('/') + 1);
+	return name;
+}
+
+/*
+
+	static bool	_fileExist(string &path)
+	{
+		std::ifstream f(path.c_str());
+		return f.good();
+	}
+
+	static bool	_Permission(string path, Client &client)
+	{
+		std::ifstream f;
+		f.open(path);
+		if (f.good() == false)
+		{
+			client.response.status_code = FORBIDDEN;
+			return false;
+		}
+		f.close();
+		return true;
+	}
+*/
+
 static bool	_isDirectory(string &path)
 {
 	struct stat s;
@@ -47,15 +79,9 @@ static bool	_isDirectory(string &path)
 	if (stat(path.c_str(), &s) == 0)
 	{
 		if (s.st_mode & S_IFDIR)
- 			return true;
+			return true;
 	}
 	return false;
-}
-
-static bool	_fileExist(string &path)
-{
-	std::ifstream f(path.c_str());
-	return f.good();
 }
 
 static bool	_isTxt(string &elem)
@@ -88,67 +114,56 @@ static bool	_putFile(string &path, string &elem, Client &client)
 		return false;
 	}
 	if (_isTxt(elem))
-		outfile.open(path, std::ofstream::out);
+		outfile.open(path, std::ofstream::out | std::ofstream::trunc);
 	else
-		outfile.open(path, std::ofstream::binary);
+		outfile.open(path, std::ofstream::binary | std::ofstream::trunc);
 	std::cout << "open file " << path << std::endl;
 	if (outfile.fail())
 	{
 		client.response.status_code = INTERNALERROR;
 		return false;
 	}
-	outfile << elem.substr(elem.find("\r\n\r\n") + 4);
+	if (elem.substr(elem.find("\r\n\r\n") + 4) == "")
+	{
+		client.response.status_code = NOCONTENT;
+		std::cout << "file is empty" << std::endl;
+	}
+	else
+	{
+		outfile << elem.substr(elem.find("\r\n\r\n") + 4);
+		client.response.status_code = CREATED;
+	}
 	outfile.close();
 	std::cout << "\t file created" << std::endl;
-	client.response.status_code = CREATED;
-	client.response.status_code = NOCONTENT;
-	return true;
-}
-
-static bool _Permission(string path, Client &client)
-{
-	std::ifstream f;
-	f.open(path);
-	if (f.good() == false)
-	{
-		client.response.status_code = FORBIDDEN;
-		return false;
-	}
-	f.close();
 	return true;
 }
 
 static bool	_resolvePart(string &elem, Client &client)
 {
+	string	path;
+	string	name;
+	string	path_name;
 	//
 	//cgi
 	//
 	size_t first_line = elem.find("\r\n");
 	if (elem.find("Content-Type: ", first_line) < elem.find("\r\n\r\n", first_line))
 	{
-		if (_getFileName(elem) == "")
-			return true;
-		string path = _get_path(client.request);
-		if (_Permission(path, client) == false)
-			return false;
-		path += _getFileName(elem);
-		std::cout << "path file to create = [" << path << "]" << std::endl;
-		if (_isDirectory(client.request.uri) == true && _fileExist(path) == false)
+		path = _get_path(client.request);
+		name = _getFileName(elem);
+		path_name = path;
+		path_name += name;
+		if (path.back() != '/')
 		{
-			std::cout << "create file from concat uri + file name" << std::endl;
-			if (_putFile(path, elem, client) == false)
-				return false;
+			std::string tmp = _getUriName(client.request);
+			if (name == tmp)
+			{
+				std::cout << CYAN << "Ok to replace file"<<path_name << NC;;//ok to replace file
+				return _putFile(path_name, elem, client);
+			}
 		}
-		else if (_fileExist(client.request.uri) == false)
-		{
-			std::cout << "create file from concat uri " << std::endl;
-			if (_putFile(client.request.uri, elem, client) == false)
-				return false;
-		}
-		else
-		{
-			std::cout << "file exist don't change it :'(  uri = " << client.request.uri << std::endl;
-		}
+		std::cout << CYAN << "Ok to create/replace file\n"<<path_name << NC;
+		return _putFile(path_name, elem, client);
 	}
 	else
 	{
