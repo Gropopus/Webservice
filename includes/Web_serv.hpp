@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 12:34:38 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 16:43:14 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@
 #define OK 				"200 OK"
 #define CREATED			"201 Created"
 #define NOCONTENT		"204 No Content"
+#define NOTMODIFIED		"304 Not Modified"
 #define BADREQUEST		"400 Bad Request"
 #define UNAUTHORIZED	"401 Unauthorized"
 #define FORBIDDEN		"403 Forbidden"

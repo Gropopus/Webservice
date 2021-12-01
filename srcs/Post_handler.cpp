@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/30 22:34:17 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 17:42:20 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,20 +23,19 @@ static std::string _get_path(Request &request)
 	else
 		path = request.config.root + request.uri;
 	
+	if (path.back() != '/')
+		path += "/";
 	return (path);
 }
 
-static string	_getFileName(string &elem, Client &client)
+static string	_getFileName(string &elem)
 {
 	size_t start;
 	size_t end;
-	string	name = _get_path(client.request);
-
+	string name = "";
 	start = elem.find("filename=\"") + 10;
 	end   = elem.find("\"", start);
 
-	if (name.back() != '/')
-		name += "/";
 	name += elem.substr(start, end - start);
 	return (name);
 }
@@ -48,10 +47,7 @@ static bool	_isDirectory(string &path)
 	if (stat(path.c_str(), &s) == 0)
 	{
 		if (s.st_mode & S_IFDIR)
-		{
-			std::cout << "URI IS DIR" << std::endl;
  			return true;
-		}
 	}
 	return false;
 }
@@ -71,10 +67,26 @@ static bool	_isTxt(string &elem)
 	return false;
 }
 
-bool	_putFile(string &path, string &elem, Client &client)
+static bool	_DirExist(string &path)
+{
+	string	path_dir;
+	
+	path_dir = path.substr(0, path.find_last_of('/'));
+	if (_isDirectory(path_dir) == true)
+		return true;
+	return true;
+}
+
+static bool	_putFile(string &path, string &elem, Client &client)
 {
 	std::ofstream	outfile;
 	
+	if (_DirExist(path) == false)
+	{
+		client.response.status_code = FORBIDDEN;
+		std::cout << "No directory to create file" << std::endl;
+		return false;
+	}
 	if (_isTxt(elem))
 		outfile.open(path, std::ofstream::out);
 	else
@@ -82,41 +94,68 @@ bool	_putFile(string &path, string &elem, Client &client)
 	std::cout << "open file " << path << std::endl;
 	if (outfile.fail())
 	{
-		client.response.status_code = FORBIDDEN;
 		client.response.status_code = INTERNALERROR;
+		return false;
 	}
 	outfile << elem.substr(elem.find("\r\n\r\n") + 4);
 	outfile.close();
+	std::cout << "\t file created" << std::endl;
 	client.response.status_code = CREATED;
 	client.response.status_code = NOCONTENT;
 	return true;
 }
 
-static int	_resolvePart(string &elem, Client &client)
+static bool _Permission(string path, Client &client)
 {
+	std::ifstream f;
+	f.open(path);
+	if (f.good() == false)
+	{
+		client.response.status_code = FORBIDDEN;
+		return false;
+	}
+	f.close();
+	return true;
+}
+
+static bool	_resolvePart(string &elem, Client &client)
+{
+	//
+	//cgi
+	//
 	size_t first_line = elem.find("\r\n");
 	if (elem.find("Content-Type: ", first_line) < elem.find("\r\n\r\n", first_line))
 	{
-		std::cout << "THIS IS A FUCKING FILE" << std::endl;
-		string path = _getFileName(elem, client);
+		if (_getFileName(elem) == "")
+			return true;
+		string path = _get_path(client.request);
+		if (_Permission(path, client) == false)
+			return false;
+		path += _getFileName(elem);
 		std::cout << "path file to create = [" << path << "]" << std::endl;
-	//check permission
-		if ((_isDirectory(client.request.uri) == true && _fileExist(path) == false) ||
-			_fileExist(client.request.uri) == false)
+		if (_isDirectory(client.request.uri) == true && _fileExist(path) == false)
 		{
-			std::cout << "file doesn't exist :D" << std::endl;
-			_putFile(path, elem, client);
+			std::cout << "create file from concat uri + file name" << std::endl;
+			if (_putFile(path, elem, client) == false)
+				return false;
+		}
+		else if (_fileExist(client.request.uri) == false)
+		{
+			std::cout << "create file from concat uri " << std::endl;
+			if (_putFile(client.request.uri, elem, client) == false)
+				return false;
 		}
 		else
-			std::cout << "file exist :'(" << std::endl;
+		{
+			std::cout << "file exist don't change it :'(  uri = " << client.request.uri << std::endl;
+		}
 	}
 	else
 	{
 		std::cout << "is not a file or uri isn't a directory" << std::endl;
-		//cgi;
 	}
 
-	return 0;
+	return true;
 }
 
 static std::string _getPart(string &body, const string &boundary)
@@ -156,7 +195,6 @@ static void	_multiPost(Client &client)
 		if (post != "")
 		{
 			_resolvePart(post, client);
-		//	std::cout << YELLOW << "next "<<BLUE << std::endl;
 		}
 	}
 }
@@ -165,7 +203,7 @@ void	post_handler(Client &client)
 {
 	size_t t;
 	std::cout << std::endl << std::endl;
-	std::cout << BLUE << "\t======POST_HANLDER DEBUG START HERE======" << std::endl;
+	std::cout << BLUE << "\t======POST_HANLDER DEBUG START HERE======" << NC << std::endl;
 	t = client.request.headers["Content-Type"].find("multipart/form-data");
 	if ((t = client.request.headers["Content-Type"].find("multipart/form-data")) !=
 		client.request.headers["Content-Type"].npos)
@@ -173,9 +211,13 @@ void	post_handler(Client &client)
 		std::cout << "got multiple post to handle" << std::endl << std::endl;
 		_multiPost(client);
 	}
+	else
+	{
+		std::cout << RED << "only one part" << std::endl;
+	}
 	//if (client->request.headers["Content-Type"] == "application/x-www-form-urlencoded")
 
-	std::cout << "\t======POST_HANLDER DEBUG  END  HERE======" << NC << std::endl;
+	std::cout << BLUE << "\t======POST_HANLDER DEBUG  END  HERE======" << NC << std::endl;
 	std::cout << std::endl << std::endl;
 	//if resources has been create respond shoudl be 201 (created)response
 	//containing a Location header field that provides an identifier for
