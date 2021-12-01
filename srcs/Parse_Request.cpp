@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 15:32:39 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 18:47:37 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,16 +51,21 @@ bool	getHeader(std::string &buffer, Request &request)
 void	getConf(Server &server, Request &request)
 {
 	std::vector<t_conf>::iterator it = server.config.begin();
+	size_t pos = -1;
+	size_t i = -1;
 	int ret = 0;
 
 	while (it != server.config.end())
 	{
-		if (request.uri.find((*it).location) != std::string::npos && (
-			request.uri[request.uri.find((*it).location) + 1] == '\0' ||
-			request.uri[request.uri.find((*it).location) + 1] == '/'))
+		if (request.uri.find((*it).location) != std::string::npos)
 		{
-			request.config = (*it);
-			ret++;
+			pos = request.uri.find((*it).location);
+			i = request.uri.find("/");
+			if ((request.uri[(*it).location.size()] == '/' || request.uri[(*it).location.size()] == '\0') && i == pos)
+			{
+				request.config = (*it);
+				ret++;
+			}
 		}
 		it++;
 	}
