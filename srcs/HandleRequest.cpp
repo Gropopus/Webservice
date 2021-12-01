@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 15:47:54 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:09:36 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/12/01 15:45:14 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -15,52 +15,6 @@
 #include "Client.hpp"
 #include <dirent.h>
 
-
-std::string		getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port) {
-    std::stringstream   ss;
-    ss << "\t\t<p><a href=\"http://" + host + ":" <<\
-        port << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\n";
-    return ss.str();
-}
-
-std::string		getPage(const char *path, std::string const &host, int port)
-{
-    std::string dirName(path);
-    DIR *dir = opendir(path);
-    std::string page =\
-    "<!DOCTYPE html>\n\
-    <html>\n\
-    <head>\n\
-            <title>" + dirName + "</title>\n\
-    </head>\n\
-    <body>\n\
-    <h1>INDEX</h1>\n\
-    <p>\n";
-
-    if (dir == NULL) {
-        std::cerr << RED << "Error: could not open [" << path << "]" << NC << std::endl;
-        return "";
-    }
-    if (dirName[0] != '/')
-        dirName = "/" + dirName;
-    for (struct dirent *dirEntry = readdir(dir); dirEntry; dirEntry = readdir(dir)) {
-        page += getLink(std::string(dirEntry->d_name), dirName, host, port);
-    }
-    page +="\
-    </p>\n\
-    </body>\n\
-    </html>\n";
-    closedir(dir);
-    return page;
-}
-
-void	create_autoIndex(Request &request, Response &response)
-{
-	response.body = getPage(request.config.root.c_str(), "localhost", request.config.port);
-	response.body_len = request.body.size();
-	response.content_type = "text/html";
-	response.status_code = OK;
-}
 
 void	buildHeader(Response &response)
 {
@@ -74,6 +28,52 @@ void	buildHeader(Response &response)
 		response.headers += "Server: " + response.name + "\n\n";
 	else
 		response.headers += "Server: Webserv\n\n";
+}
+
+std::string		addlinks(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port)
+{
+	std::stringstream	ss;
+
+	ss << "\t\t<p><a href=\"http://" + host + ":" <<\
+		port << dirName + dirEntry + "\">" + dirEntry + "</a></p>\n";
+	return (ss.str());
+}
+
+std::string		createPage(Request &request)
+{
+	DIR			*dir = opendir(request.config.root.c_str());
+	std::string	index = "<html>\n\
+	<head>\n\
+	<title>" + request.config.location + "</title>\n\
+	</head>\n\
+	<body>\n\
+	<h1>AUTO INDEX</h1>\n\
+	<p>\n";
+	if (dir == NULL)
+	{
+		std::cerr << RED << "Error: " << NC << "could not open " << request.config.root << std::endl;
+		return "";
+	}
+	struct dirent *dirAccess = readdir(dir);
+	while (dirAccess)
+	{
+		index += addlinks(std::string(dirAccess->d_name), request.config.location, "localhost", request.config.port);
+		dirAccess = readdir(dir);
+	}
+	index+= "</p>\n</body>\n</html>\n";
+	closedir(dir);
+	return (index);
+}
+void	create_autoIndex(Request &request, Response &response)
+{
+	//response.body = createPage(request.config.location.c_str(), request.config.root.c_str(), "localhost", request.config.port);
+	response.body = createPage(request);
+	std::cout << RED << response.body << NC;
+	response.body_len = response.body.size();
+	response.content_type = "text/html";
+	response.status_code = OK;
+	buildHeader(response);
+	response.res = response.headers + response.body;
 }
 
 void	get_basics(Request &request, Response &response)
