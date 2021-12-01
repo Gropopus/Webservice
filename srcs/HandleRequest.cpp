@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 17:11:07 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:42:20 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,20 @@
 #include "Client.hpp"
 #include <dirent.h>
 
+std::string		getLastModified(std::string path)
+{
+	char		buf[BUFFER_SIZE + 1];
+	int			ret;
+	struct tm	*tm;
+	struct stat	file_info;
+
+	std::memset(buf, 0, BUFFER_SIZE);
+	if (lstat(path.c_str(), &file_info) == -1)
+		return ("");
+	tm = localtime(&file_info.st_mtime);
+	ret = strftime(buf, BUFFER_SIZE, "%a, %d %b %Y %T %Z", tm);
+	return (buf);
+}
 
 void	buildHeader(Response &response)
 {
@@ -21,7 +35,8 @@ void	buildHeader(Response &response)
 	response.headers += "Content-Type: " + response.content_type + "\r\n";
 	response.headers += "Content-Length: " + std::to_string(response.body_len) + "\r\n"; 
 	response.headers += "Date: " + ft_getDate() + "\r\n";
-//	response.headers += "Last-Modified: \r\n";
+	std::cout << YELLOW << response.path << NC << std::endl;
+	response.headers += "Last-Modified: " + getLastModified(response.path) + "\r\n";;
 	response.headers += "Location: " + response.location + "\r\n";
 	if (response.name != "")
 		response.headers += "Server: " + response.name + "\n\n";
@@ -63,9 +78,9 @@ std::string		createPage(Request &request)
 	closedir(dir);
 	return (index);
 }
+
 void	create_autoIndex(Request &request, Response &response)
 {
-	//response.body = createPage(request.config.location.c_str(), request.config.root.c_str(), "localhost", request.config.port);
 	response.body = createPage(request);
 	std::cout << RED << response.body << NC;
 	response.body_len = response.body.size();
@@ -206,7 +221,6 @@ std::string		getContent_type(std::string to_find)
 
 void	openFile(Response &response, Request &request)
 {
-	std::string	path;
 	std::ifstream		file;
 	std::stringstream	buffer;
 
@@ -215,40 +229,34 @@ void	openFile(Response &response, Request &request)
 		getErrors(response, request, "/405.html");
 		return ;
 	}
-	path = get_path(request, response);
-	if (path == "autoIndex")
+	response.path = get_path(request, response);
+	if (response.path == "autoIndex")
 		return ;
-	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
-	if (isFileDir(path))
+	std::cout << RED << response.path << NC << "\n";
+	if (isFileDir(response.path))
 	{
-		file.open(path.c_str(), std::ifstream::in);
+		file.open(response.path.c_str(), std::ifstream::in);
 		if (file.is_open() == false && response.status_code == OK)
 		{
 			response.status_code = NOTFOUND;
-			path = request.errors + "/404.html";
+			response.path = request.errors + "/404.html";
 			file.close();
-			file.open(path.c_str(), std::ifstream::in);
+			file.open(response.path.c_str(), std::ifstream::in);
 			response.content_type = "text/html";
 		}
-		// gerer la langue ici
 		buffer << file.rdbuf();
 		response.body = buffer.str();
 		response.body_len = response.body.size();
 		file.close();
 	}
-	//else if () auto index a gerer;
-	//{
-	//	
-	//		response.content_type = "text/html";
-	//}
 	else
 	{
 		getErrors(response, request, "/403.html");
 		response.status_code = FORBIDDEN;
 	}
 	std::cout << response.res;
-	if (path.find_last_of('.') != path.npos)
-		response.content_type = getContent_type(path.substr(path.find_last_of('.')));
+	if (response.path.find_last_of('.') != response.path.npos)
+		response.content_type = getContent_type(response.path.substr(response.path.find_last_of('.')));
 	else
 		response.content_type = "not found";
 }
@@ -261,7 +269,6 @@ void	HandleGET(Client &client)
 		client.response.status_code = OK;
 	openFile(client.response, client.request);
 	buildHeader(client.response);
-	std::cout<< client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
@@ -276,12 +283,10 @@ void	HandlePOST(Client &client)
 
 void	HandleDELETE(Client &client)
 {
-	std::string			path;
 	std::ifstream		file;
 	std::stringstream	buffer;
 
 	client.response.status_code = OK;
-	std::cout << YELLOW << client.request.config.methods << NC << std::endl;
 	if (client.request.config.methods.find("DELETE") == std::string::npos)
 	{
 		client.response.status_code = NOTALLOWED;
@@ -290,11 +295,11 @@ void	HandleDELETE(Client &client)
 		client.response.res = client.response.headers + client.response.body;
 		return ;
 	}
-	path = get_path(client.request, client.response);
+	client.response.path = get_path(client.request, client.response);
 	//std::cout << CYAN << path << NC << std::endl;
-	if (isFileDir(path) > 0)
+	if (isFileDir(client.response.path) > 0)
 	{
-		if (remove(path.c_str()) == 0)
+		if (remove(client.response.path.c_str()) == 0)
 		{
 			client.response.status_code = NOCONTENT;
 			getErrors(client.response, client.request, "/204.html");
@@ -311,13 +316,11 @@ void	HandleDELETE(Client &client)
 		getErrors(client.response, client.request, "/404.html");
 	}
 	buildHeader(client.response);
-//	std::cout << client.response.headers << std::endl;
 	client.response.res = client.response.headers + client.response.body;
 }
 
 void	HandleBAD(Client &client)
 {
-	std::string			path;
 	std::ifstream		file;
 	std::stringstream	buffer;
 
@@ -325,8 +328,8 @@ void	HandleBAD(Client &client)
 		&& client.request.method != "CONNECT" && client.request.method != "TRACE")
 	{
 		client.response.status_code = NOTIMPLEMENTED;
-		path = client.request.errors + "/501.html";
-		file.open(path.c_str(), std::ifstream::in);
+		client.response.path = client.request.errors + "/501.html";
+		file.open(client.response.path.c_str(), std::ifstream::in);
 		buffer << file.rdbuf();
 		client.response.body = buffer.str();
 		client.response.body_len = client.response.body.size();
@@ -335,8 +338,8 @@ void	HandleBAD(Client &client)
 	else
 	{
 		client.response.status_code = BADREQUEST;
-		path = client.request.errors + "/400.html";
-		file.open(path.c_str(), std::ifstream::in);
+		client.response.path = client.request.errors + "/400.html";
+		file.open(client.response.path.c_str(), std::ifstream::in);
 		client.response.content_type = "text/html";
 		buffer << file.rdbuf();
 		client.response.body = buffer.str();

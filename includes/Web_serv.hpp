@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 12:34:38 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 17:32:09 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,6 +131,7 @@ struct Response
 	std::string							name;
 	std::string							location;
 	size_t								body_len;
+	std::string							path;
 	//std::map<std::string, std::string> 	headers;
 	std::string							body;
 	std::string							res;
@@ -138,6 +139,7 @@ struct Response
 	void	clear()
 	{
 		body_len = 0;
+		path.clear();
 		location.clear();
 		name.clear();
 		content_type.clear();
