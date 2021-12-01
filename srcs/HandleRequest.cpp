@@ -6,12 +6,60 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 01:54:31 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/01 15:46:01 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Web_serv.hpp"
 #include "Client.hpp"
+#include <dirent.h>
+
+
+std::string		getLink(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port) {
+    std::stringstream   ss;
+    ss << "\t\t<p><a href=\"http://" + host + ":" <<\
+        port << dirName + "/" + dirEntry + "\">" + dirEntry + "</a></p>\n";
+    return ss.str();
+}
+
+std::string		getPage(const char *path, std::string const &host, int port)
+{
+    std::string dirName(path);
+    DIR *dir = opendir(path);
+    std::string page =\
+    "<!DOCTYPE html>\n\
+    <html>\n\
+    <head>\n\
+            <title>" + dirName + "</title>\n\
+    </head>\n\
+    <body>\n\
+    <h1>INDEX</h1>\n\
+    <p>\n";
+
+    if (dir == NULL) {
+        std::cerr << RED << "Error: could not open [" << path << "]" << NC << std::endl;
+        return "";
+    }
+    if (dirName[0] != '/')
+        dirName = "/" + dirName;
+    for (struct dirent *dirEntry = readdir(dir); dirEntry; dirEntry = readdir(dir)) {
+        page += getLink(std::string(dirEntry->d_name), dirName, host, port);
+    }
+    page +="\
+    </p>\n\
+    </body>\n\
+    </html>\n";
+    closedir(dir);
+    return page;
+}
+
+void	create_autoIndex(Request &request, Response &response)
+{
+	response.body = getPage(request.config.root.c_str(), "localhost", request.config.port);
+	response.body_len = request.body.size();
+	response.content_type = "text/html";
+	response.status_code = OK;
+}
 
 void	buildHeader(Response &response)
 {
@@ -78,7 +126,7 @@ bool	is_only(std::string str)
 	return (true);
 }
 
-std::string get_path(Request &request)
+std::string get_path(Request &request, Response &response)
 {
 	std::string path;
 
@@ -88,8 +136,16 @@ std::string get_path(Request &request)
 	if ((request.uri == request.config.location
 		&& request.uri == "/") || is_only(request.uri) == true)
 	{
-		request.uri = "/" + request.config.index;
-		path = request.config.root + request.uri;
+		if (request.config.autoIndex == true)
+		{
+			create_autoIndex(request, response);
+			path = "autoIndex";
+		}
+		else
+		{
+			request.uri = "/" + request.config.index;
+			path = request.config.root + request.uri;
+		}
 	}
 	else if ((request.uri == request.config.location
 	|| request.uri == request.config.location + "/") && request.uri != "/")
@@ -128,7 +184,7 @@ std::string		getContent_type(std::string to_find)
 	ret[1] = "application/octet-stream";
 	ret[2] = "image/jpeg";
 	ret[3] = "image/jpeg";
-	ret[4] = "text/html;";
+	ret[4] = "text/html";
 	ret[5] = "text/html";
 	ret[6] = "image/png";
 	ret[7] = "image/bmp";
@@ -159,7 +215,9 @@ void	openFile(Response &response, Request &request)
 		getErrors(response, request, "/405.html");
 		return ;
 	}
-	path = get_path(request);
+	path = get_path(request, response);
+	if (path == "autoIndex")
+		return ;
 	std::cout << RED << path << " " << isFileDir(path) << NC << "\n";
 	if (isFileDir(path))
 	{
@@ -230,7 +288,7 @@ void	HandleDELETE(Client &client)
 		client.response.res = client.response.headers + client.response.body;
 		return ;
 	}
-	path = get_path(client.request);
+	path = get_path(client.request, client.response);
 	//std::cout << CYAN << path << NC << std::endl;
 	if (isFileDir(path) > 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/11/30 19:08:13 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/01 12:34:38 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ struct	t_conf
 	std::string exec;
 	std::string auth;
 	std::string php;
+	bool		autoIndex;
 
 	void	clear(void)
 	{
@@ -91,6 +92,7 @@ struct	t_conf
 		auth.clear();
 		php.clear();
 		port = 0;
+		autoIndex = false;
 	}
 };
 
