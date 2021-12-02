@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 17:42:20 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 12:28:30 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,10 @@ void	buildHeader(Response &response)
 		response.headers += "Server: Webserv\n\n";
 }
 
-std::string		addlinks(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port)
-{
-	std::stringstream	ss;
-
-	ss << "\t\t<p><a href=\"http://" + host + ":" <<\
-		port << dirName + dirEntry + "\">" + dirEntry + "</a></p>\n";
-	return (ss.str());
-}
-
 std::string		createPage(Request &request)
 {
 	DIR			*dir = opendir(request.config.root.c_str());
+	std::stringstream strstream;
 	std::string	index = "<html>\n\
 	<head>\n\
 	<title>" + request.config.location + "</title>\n\
@@ -71,7 +63,12 @@ std::string		createPage(Request &request)
 	struct dirent *dirAccess = readdir(dir);
 	while (dirAccess)
 	{
-		index += addlinks(std::string(dirAccess->d_name), request.config.location, "localhost", request.config.port);
+		strstream << "\t\t<p><a href=\"http://localhost:"\
+			<< request.config.port << request.config.location\
+			+ std::string(dirAccess->d_name)\
+			+ "\">" + std::string(dirAccess->d_name) + "</a></p>\n";
+		index += strstream.str();
+		strstream.str("");
 		dirAccess = readdir(dir);
 	}
 	index+= "</p>\n</body>\n</html>\n";
