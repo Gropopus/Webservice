@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 13:46:50 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 13:52:11 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,30 +246,17 @@ void	HandleDELETE(Client &client)
 
 void	HandleBAD(Client &client)
 {
-	std::ifstream		file;
-	std::stringstream	buffer;
 
 	if (client.request.method != "HEAD" && client.request.method != "PUT"
 		&& client.request.method != "CONNECT" && client.request.method != "TRACE")
 	{
 		client.response.status_code = NOTIMPLEMENTED;
-		client.response.path = client.request.errors + "/501.html";
-		file.open(client.response.path.c_str(), std::ifstream::in);
-		buffer << file.rdbuf();
-		client.response.body = buffer.str();
-		client.response.body_len = client.response.body.size();
-		file.close();
+		getErrors(client.response, client.request, "/501.html");
 	}
 	else
 	{
 		client.response.status_code = BADREQUEST;
-		client.response.path = client.request.errors + "/400.html";
-		file.open(client.response.path.c_str(), std::ifstream::in);
-		client.response.content_type = "text/html";
-		buffer << file.rdbuf();
-		client.response.body = buffer.str();
-		client.response.body_len = client.response.body.size();
-		file.close();
+		getErrors(client.response, client.request, "/400.html");
 	}
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
