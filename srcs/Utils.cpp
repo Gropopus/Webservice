@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 12:55:32 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/27 12:31:34 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 13:45:37 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	ft_gnl(std::string &buffer, std::string &line, char to)
 	}
 }
 
-string	eraseWhiteSpace(int i, int to, string str)
+std::string	eraseWhiteSpace(int i, int to, std::string str)
 {
 	while (str[i] == '\f' || str[i] == '\t' || str[i] == '\v'
 	|| str[i] == '\n' || str[i] == '\r' || str[i] == ' ')
@@ -80,3 +80,31 @@ std::string		ft_getDate()
 	return (buffer);
 }
 
+int		isFileDir(std::string path)
+{
+	struct stat s;
+
+	if (stat(path.c_str(), &s) == 0)
+	{
+		if (s.st_mode & S_IFREG)
+			return (1);
+		if (s.st_mode & S_IFDIR)
+			return (2);
+		else
+			return 0;
+	}
+	return (-1);
+}
+
+bool	is_only(std::string str)
+{
+	int i = 0;
+
+	while (str[i])
+	{
+		if (str[i] != '/')
+			return (false);
+		i++;
+	}
+	return (true);
+}

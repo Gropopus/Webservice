@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 12:33:13 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 13:46:50 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,49 +44,6 @@ void	buildHeader(Response &response)
 		response.headers += "Server: Webserv\n\n";
 }
 
-std::string		createPage(Request &request)
-{
-	DIR			*dir = opendir(request.config.root.c_str());
-	struct dirent *dirAccess = readdir(dir);
-	std::stringstream strstream;
-	std::string	index = "<html>\n\
-	<head>\n\
-	<title>" + request.config.location + "</title>\n\
-	</head>\n\
-	<body>\n\
-	<h1>AUTO INDEX</h1>\n\
-	<p>\n";
-	if (dir == NULL)
-	{
-		std::cerr << RED << "Error: " << NC << "could not open " << request.config.root << std::endl;
-		return "";
-	}
-	while (dirAccess)
-	{
-		strstream << "\t\t<p><a href=\"http://localhost:"\
-			<< request.config.port << request.config.location\
-			+ std::string(dirAccess->d_name)\
-			+ "\">" + std::string(dirAccess->d_name) + "</a></p>\n";
-		index += strstream.str();
-		strstream.str("");
-		dirAccess = readdir(dir);
-	}
-	index+= "</p>\n</body>\n</html>\n";
-	closedir(dir);
-	return (index);
-}
-
-void	create_autoIndex(Request &request, Response &response)
-{
-	response.body = createPage(request);
-	std::cout << RED << response.body << NC;
-	response.body_len = response.body.size();
-	response.content_type = "text/html";
-	response.status_code = OK;
-	buildHeader(response);
-	response.res = response.headers + response.body;
-}
-
 void	get_basics(Request &request, Response &response)
 {
 	response.version = request.version;
@@ -107,35 +64,6 @@ void	getErrors(Response &response, Request &request, std::string error)
 	response.body_len = response.body.size();
 	file.close();
 	response.content_type = "text/html";
-}
-
-int		isFileDir(std::string path)
-{
-	struct stat s;
-
-	if (stat(path.c_str(), &s) == 0)
-	{
-		if (s.st_mode & S_IFREG)
-			return (1);
-		if (s.st_mode & S_IFDIR)
-			return (2);
-		else
-			return 0;
-	}
-	return (-1);
-}
-
-bool	is_only(std::string str)
-{
-	int i = 0;
-
-	while (str[i])
-	{
-		if (str[i] != '/')
-			return (false);
-		i++;
-	}
-	return (true);
 }
 
 std::string get_path(Request &request, Response &response)
