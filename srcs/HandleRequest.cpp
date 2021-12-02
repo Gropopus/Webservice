@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 12:28:30 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 12:33:13 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void	buildHeader(Response &response)
 std::string		createPage(Request &request)
 {
 	DIR			*dir = opendir(request.config.root.c_str());
+	struct dirent *dirAccess = readdir(dir);
 	std::stringstream strstream;
 	std::string	index = "<html>\n\
 	<head>\n\
@@ -60,7 +61,6 @@ std::string		createPage(Request &request)
 		std::cerr << RED << "Error: " << NC << "could not open " << request.config.root << std::endl;
 		return "";
 	}
-	struct dirent *dirAccess = readdir(dir);
 	while (dirAccess)
 	{
 		strstream << "\t\t<p><a href=\"http://localhost:"\
