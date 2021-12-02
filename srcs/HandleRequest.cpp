@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 13:52:11 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/02 15:09:02 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,13 +250,13 @@ void	HandleBAD(Client &client)
 	if (client.request.method != "HEAD" && client.request.method != "PUT"
 		&& client.request.method != "CONNECT" && client.request.method != "TRACE")
 	{
-		client.response.status_code = NOTIMPLEMENTED;
-		getErrors(client.response, client.request, "/501.html");
+		client.response.status_code = BADREQUEST;
+		getErrors(client.response, client.request, "/400.html");
 	}
 	else
 	{
-		client.response.status_code = BADREQUEST;
-		getErrors(client.response, client.request, "/400.html");
+		client.response.status_code = NOTIMPLEMENTED;
+		getErrors(client.response, client.request, "/501.html");
 	}
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
