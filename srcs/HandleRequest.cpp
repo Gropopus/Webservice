@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 15:09:02 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/03 12:30:35 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,6 @@ void	get_basics(Request &request, Response &response)
 	response.version = request.version;
 	response.location = request.config.location;
 	response.name = request.server_name;
-}
-
-void	getErrors(Response &response, Request &request, std::string error)
-{
-	std::string	path;
-	std::ifstream		file;
-	std::stringstream	buffer;
-
-	path = request.errors + error;
-	file.open(path.c_str(), std::ifstream::in);
-	buffer << file.rdbuf();
-	response.body = buffer.str();
-	response.body_len = response.body.size();
-	file.close();
-	response.content_type = "text/html";
 }
 
 std::string get_path(Request &request, Response &response)
@@ -164,10 +149,9 @@ void	openFile(Response &response, Request &request)
 		if (file.is_open() == false && response.status_code == OK)
 		{
 			response.status_code = NOTFOUND;
-			response.path = request.errors + "/404.html";
-			file.close();
-			file.open(response.path.c_str(), std::ifstream::in);
-			response.content_type = "text/html";
+			getErrors(response, request, "/404.html");
+			buildHeader(response);
+			return ;
 		}
 		buffer << file.rdbuf();
 		response.body = buffer.str();
@@ -178,6 +162,8 @@ void	openFile(Response &response, Request &request)
 	{
 		getErrors(response, request, "/403.html");
 		response.status_code = FORBIDDEN;
+		buildHeader(response);
+		return ;
 	}
 	std::cout << response.res;
 	if (response.path.find_last_of('.') != response.path.npos)

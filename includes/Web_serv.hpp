@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/02 13:47:42 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/03 12:15:14 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,4 +165,5 @@ void			ft_gnl(std::string &buffer, std::string &line, char to);
 void			create_autoIndex(Request &request, Response &response);
 void			post_handler(Client &client);
 void			buildHeader(Response &response);
+void			getErrors(Response &response, Request &request, std::string error);
 #endif
