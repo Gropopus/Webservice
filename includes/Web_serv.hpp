@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/01 17:51:44 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/06 19:35:32 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,4 +162,5 @@ int				ft_stoi(std::string str);
 
 void			post_handler(Client &client);
 std::string		get_path(Request &request);
+void	buildHeader(Response &response);
 #endif

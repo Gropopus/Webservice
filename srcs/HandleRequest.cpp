@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 17:42:20 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/06 19:37:16 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	buildHeader(Response &response)
 {
 	response.headers = response.version + ' ' +  response.status_code + "\r\n";
 	response.headers += "Content-Type: " + response.content_type + "\r\n";
-	response.headers += "Content-Length: " + std::to_string(response.body_len) + "\r\n"; 
+	response.headers += "Content-Length: " + std::to_string(response.body_len) + "\r\n";
 	response.headers += "Date: " + ft_getDate() + "\r\n";
 	std::cout << YELLOW << response.path << NC << std::endl;
 	response.headers += "Last-Modified: " + getLastModified(response.path) + "\r\n";;
@@ -279,6 +279,8 @@ void	HandlePOST(Client &client)
 	else
 		client.response.status_code = OK;
 	post_handler(client); //build post respond
+	buildHeader(client.response);
+	client.response.res = client.response.headers + client.response.body;
 }
 
 void	HandleDELETE(Client &client)
