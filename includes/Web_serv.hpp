@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/06 19:35:32 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/06 19:41:29 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,14 +153,19 @@ struct Response
 
 class Server;
 class Client;
-typedef std::string string;
+//typedef std::string string;
 
-void			ft_gnl(string &buffer, string &line, char to);
-string			eraseWhiteSpace(int i, int to, string str);
+std::string		eraseWhiteSpace(int i, int to, std::string str);
 std::string		ft_getDate(void);
+std::string		get_path(Request &request);
 int				ft_stoi(std::string str);
-
+int				isFileDir(std::string path);
+bool			is_only(std::string str);
+void			ft_gnl(std::string &buffer, std::string &line, char to);
+void			create_autoIndex(Request &request, Response &response);
 void			post_handler(Client &client);
 std::string		get_path(Request &request);
 void	buildHeader(Response &response);
+void			buildHeader(Response &response);
+void			getErrors(Response &response, Request &request, std::string error);
 #endif

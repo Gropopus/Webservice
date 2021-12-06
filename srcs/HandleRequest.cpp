@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/06 19:37:16 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/06 19:41:05 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,101 +44,11 @@ void	buildHeader(Response &response)
 		response.headers += "Server: Webserv\n\n";
 }
 
-std::string		addlinks(std::string const &dirEntry, std::string const &dirName, std::string const &host, int port)
-{
-	std::stringstream	ss;
-
-	ss << "\t\t<p><a href=\"http://" + host + ":" <<\
-		port << dirName + dirEntry + "\">" + dirEntry + "</a></p>\n";
-	return (ss.str());
-}
-
-std::string		createPage(Request &request)
-{
-	DIR			*dir = opendir(request.config.root.c_str());
-	std::string	index = "<html>\n\
-	<head>\n\
-	<title>" + request.config.location + "</title>\n\
-	</head>\n\
-	<body>\n\
-	<h1>AUTO INDEX</h1>\n\
-	<p>\n";
-	if (dir == NULL)
-	{
-		std::cerr << RED << "Error: " << NC << "could not open " << request.config.root << std::endl;
-		return "";
-	}
-	struct dirent *dirAccess = readdir(dir);
-	while (dirAccess)
-	{
-		index += addlinks(std::string(dirAccess->d_name), request.config.location, "localhost", request.config.port);
-		dirAccess = readdir(dir);
-	}
-	index+= "</p>\n</body>\n</html>\n";
-	closedir(dir);
-	return (index);
-}
-
-void	create_autoIndex(Request &request, Response &response)
-{
-	response.body = createPage(request);
-	std::cout << RED << response.body << NC;
-	response.body_len = response.body.size();
-	response.content_type = "text/html";
-	response.status_code = OK;
-	buildHeader(response);
-	response.res = response.headers + response.body;
-}
-
 void	get_basics(Request &request, Response &response)
 {
 	response.version = request.version;
 	response.location = request.config.location;
 	response.name = request.server_name;
-}
-
-void	getErrors(Response &response, Request &request, std::string error)
-{
-	std::string	path;
-	std::ifstream		file;
-	std::stringstream	buffer;
-
-	path = request.errors + error;
-	file.open(path.c_str(), std::ifstream::in);
-	buffer << file.rdbuf();
-	response.body = buffer.str();
-	response.body_len = response.body.size();
-	file.close();
-	response.content_type = "text/html";
-}
-
-int		isFileDir(std::string path)
-{
-	struct stat s;
-
-	if (stat(path.c_str(), &s) == 0)
-	{
-		if (s.st_mode & S_IFREG)
-			return (1);
-		if (s.st_mode & S_IFDIR)
-			return (2);
-		else
-			return 0;
-	}
-	return (-1);
-}
-
-bool	is_only(std::string str)
-{
-	int i = 0;
-
-	while (str[i])
-	{
-		if (str[i] != '/')
-			return (false);
-		i++;
-	}
-	return (true);
 }
 
 std::string get_path(Request &request, Response &response)
@@ -239,10 +149,9 @@ void	openFile(Response &response, Request &request)
 		if (file.is_open() == false && response.status_code == OK)
 		{
 			response.status_code = NOTFOUND;
-			response.path = request.errors + "/404.html";
-			file.close();
-			file.open(response.path.c_str(), std::ifstream::in);
-			response.content_type = "text/html";
+			getErrors(response, request, "/404.html");
+			buildHeader(response);
+			return ;
 		}
 		buffer << file.rdbuf();
 		response.body = buffer.str();
@@ -253,6 +162,8 @@ void	openFile(Response &response, Request &request)
 	{
 		getErrors(response, request, "/403.html");
 		response.status_code = FORBIDDEN;
+		buildHeader(response);
+		return ;
 	}
 	std::cout << response.res;
 	if (response.path.find_last_of('.') != response.path.npos)
@@ -323,30 +234,17 @@ void	HandleDELETE(Client &client)
 
 void	HandleBAD(Client &client)
 {
-	std::ifstream		file;
-	std::stringstream	buffer;
 
 	if (client.request.method != "HEAD" && client.request.method != "PUT"
 		&& client.request.method != "CONNECT" && client.request.method != "TRACE")
 	{
-		client.response.status_code = NOTIMPLEMENTED;
-		client.response.path = client.request.errors + "/501.html";
-		file.open(client.response.path.c_str(), std::ifstream::in);
-		buffer << file.rdbuf();
-		client.response.body = buffer.str();
-		client.response.body_len = client.response.body.size();
-		file.close();
+		client.response.status_code = BADREQUEST;
+		getErrors(client.response, client.request, "/400.html");
 	}
 	else
 	{
-		client.response.status_code = BADREQUEST;
-		client.response.path = client.request.errors + "/400.html";
-		file.open(client.response.path.c_str(), std::ifstream::in);
-		client.response.content_type = "text/html";
-		buffer << file.rdbuf();
-		client.response.body = buffer.str();
-		client.response.body_len = client.response.body.size();
-		file.close();
+		client.response.status_code = NOTIMPLEMENTED;
+		getErrors(client.response, client.request, "/501.html");
 	}
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
