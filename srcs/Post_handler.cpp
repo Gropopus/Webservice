@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/06 19:37:33 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/07 15:31:49 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,25 +74,151 @@ bool	_isExec(string path)
 }
 
 /*
+** Prep env for cgi
+*/
+char	**_prep_env(Client &client, std::string path, string name)
+{
+	(void)client;
+	string env[14];
+	char	**env_c;
+
+	//server information
+	env[0] = "SERVER_SOFTWARE=webserv/1.0";// nom/version
+	env[1] = "SERVER_NAME=";
+	if (client.request.server_name != "")
+		env[1] += client.request.server_name;
+	else
+		env[1] += "webserv";
+	env[2] = "GATEWAY_INTERFACE=CGI/1.1";
+
+	//request information
+	env[3] = "SERVER_PROTOCOL=HTTP/1.1";
+	env[4] = "SERVER_PORT=";
+		env[4] += std::to_string(client.request.config.port);
+	env[5] = "REQUEST_METHOD=";
+		env[5] += client.request.method;
+	env[6] = "PATH_INFO="; //optional
+	env[7] = "PATH_TRANSLATED=";
+		env[7] += path;
+	env[8] = "SCRIPT_NAME=";
+		env[8] += name;
+	env[9] = "REMOTE_HOST=";
+		env[9] += client.ip;
+	env[10] = "REMOTE_ADDR=";
+		env[10] += client.ip;
+	if (client.request.method == "POST")
+	{
+		env[11] = "CONTENT_TYPE=";
+		env[11] += client.request.headers["Content-Type"];
+	}
+	if (client.request.method == "GET")
+	{
+		env[11] = "QUERY_STRING=";
+		env[11] += ""; //placeholder need to do
+	}
+
+	//client information
+	env[12] = "HTTP_ACCEPT=";
+		env[12] += client.request.headers["Accept"];
+	env[13] = "HTTP_USER_AGENT=";
+		env[13] += client.request.headers["User-Agent"];
+	
+	int i = 0;
+	env_c = (char **)malloc(sizeof(char *) * 15);
+	while (i < 14)
+	{
+		env_c[i] = strdup(env[i].c_str());
+		++i;
+	}
+	env_c[i] = NULL;
+	return (env_c);
+}
+static void _ft_free_env(char **env)
+{
+	int i = 0;
+	while (env && env[i])
+	{
+		free(env[i]);
+		++i;
+	}
+	free(env);
+}
+
+/*
 ** Get the output of cmd
 */
-std::string		_exec(const char* cmd)
+std::string		_exec(const char* cmd, Client &client)
 {
-	char buffer[128];
-	std::string result = "";
-	FILE* pipe = popen(cmd, "r");
-	if (!pipe)
-		throw std::runtime_error("popen() failed!");
-	try {
-		while (fgets(buffer, sizeof buffer, pipe) != NULL) {
-			result += buffer;
-		}
-	} catch (...) {
-		pclose(pipe);
-		throw;
+	// pid_t	pid;
+	// int		old_stdin;
+	// int		old_stdout;
+	 string	output;
+	char	**env;
+
+	env = _prep_env(client, cmd, cmd);
+
+	int i = 0;
+	while (env[i])
+	{
+		std::cout << "env[" << i << "] = [" <<env[i] << std::endl;
+		++i;
 	}
-	pclose(pipe);
-	return result;
+	/*
+	old_stdin = dup(STDIN_FILENO);
+	old_stdout = dup(STDOUT_FILENO);
+
+	FILE	*fin = tmpfile();
+	FILE	*fout = tmpfile();
+	int		fdin = fileno(fin);
+	int		fdout = fileno(fout);
+
+	write(fdin, client.request.body.c_str(), client.request.body.size());
+	lseek(fdin, 0, SEEK_SET);
+
+	pid = fork();
+	if (pid == -1)
+	{
+		fclose(fin);
+		fclose(fout);
+		close(fdin);
+		close(fdout);
+		close(old_stdin);
+		close(old_stdout);
+		return (INTERNALERROR);
+	}
+	if (pid == 0)
+	{
+		dup2(fdin, STDIN_FILENO);
+		dup2(fdout, STDOUT_FILENO);
+		execve(cmd, NULL, env);
+		std::cout << INTERNALERROR;
+		exit(1);
+	}
+	else
+	{
+		waitpid(pid, NULL, 0);
+		lseek(fdout, 0, SEEK_SET);
+		char buffer[1000];
+
+		int ret = 1;
+		while (ret > 0)
+		{
+			memset(buffer, 0, 1000);
+			ret = read(fdout, buffer, 999);
+			output += buffer;
+		}
+	}
+	dup2(old_stdin, STDIN_FILENO);
+	dup2(old_stdout, STDOUT_FILENO);
+	fclose(fin);
+	fclose(fout);
+	close(fdin);
+	close(fdout);
+	close(old_stdin);
+	close(old_stdout);
+	*/
+	_ft_free_env(env);
+	return output;
 }
 
 /*
@@ -133,7 +259,7 @@ bool	_cgi(Client &client)
 	path_exec = get_path(client.request);
 	if (_isExist(path_exec) == false)
 	{
-	std::cout << "path not found : " <<  path_exec << std::endl;
+		std::cout << "path not found : " <<  path_exec << std::endl;
 		client.response.status_code = NOTFOUND;
 		_construct_error(client.response, client.request);
 		return false;
@@ -149,7 +275,13 @@ bool	_cgi(Client &client)
 	try
 	{
 		std::cout << "get output from " << path_exec << std::endl;
-		output = _exec(path_exec.c_str());
+		output = _exec(path_exec.c_str(), client);
+		if (output == INTERNALERROR)
+		{
+			client.response.status_code = INTERNALERROR;
+			_construct_error(client.response, client.request);
+			return false;
+		}
 		client.response.body = _newOutput(client, output);
 		client.response.body_len = client.response.body.length();
 	}

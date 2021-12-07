@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:22:42 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/29 13:25:53 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/07 15:26:01 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 # include "Web_serv.hpp"
@@ -39,14 +40,14 @@ class Client
 		void	setFdSets(bool set, int n);
 //		void	setToStandBy(void);
 
-	private:
+		std::string		ip;
 		int			port;
+	private:
 //		int			status;
 //		int			cgi_pid;
 //		int			tmp_fd;
 		fd_set			*rSet;
 		fd_set			*wSet;
-		std::string		ip;
 //		std::string	last_date;
 //		std::string	response;
 //		t_conf 		conf;
