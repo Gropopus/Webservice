@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 15:31:49 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/07 17:17:35 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,8 @@ bool	_isExec(string path)
 /*
 ** Prep env for cgi
 */
-char	**_prep_env(Client &client, std::string path, string name)
+void	_prep_env(Client &client, std::string path, string name, string env[14])
 {
-	(void)client;
-	string env[14];
-	char	**env_c;
-
 	//server information
 	env[0] = "SERVER_SOFTWARE=webserv/1.0";// nom/version
 	env[1] = "SERVER_NAME=";
@@ -122,23 +118,19 @@ char	**_prep_env(Client &client, std::string path, string name)
 		env[12] += client.request.headers["Accept"];
 	env[13] = "HTTP_USER_AGENT=";
 		env[13] += client.request.headers["User-Agent"];
-	
-	int i = 0;
-	env_c = (char **)malloc(sizeof(char *) * 15);
-	while (i < 14)
-	{
-		env_c[i] = strdup(env[i].c_str());
-		++i;
-	}
-	env_c[i] = NULL;
-	return (env_c);
 }
-static void _ft_free_env(char **env)
+
+/*
+** Free env after use
+*/
+void	_ft_free_env(char **env)
 {
-	int i = 0;
+	int i;
+	i = 0;
 	while (env && env[i])
 	{
 		free(env[i]);
+		env[i] = NULL;
 		++i;
 	}
 	free(env);
@@ -149,21 +141,51 @@ static void _ft_free_env(char **env)
 */
 std::string		_exec(const char* cmd, Client &client)
 {
-	// pid_t	pid;
-	// int		old_stdin;
-	// int		old_stdout;
-	 string	output;
-	char	**env;
+	pid_t	pid;
+	int		old_stdin;
+	int		old_stdout;
+	string	output;
+	string	env[15];
+	char **env_c;
 
-	env = _prep_env(client, cmd, cmd);
-
-	int i = 0;
-	while (env[i])
+	//env prep
+	_prep_env(client, cmd, cmd, env);
+	int len = 0;
+	while (g_env[len])
+		++len;
+	if ((env_c = (char **)malloc(sizeof(char *) * (len + 15))) == NULL)
+		throw std::bad_alloc();
+	len = 0;
+	while (g_env[len])
 	{
-		std::cout << "env[" << i << "] = [" <<env[i] << std::endl;
+		if ((env_c[len] = strdup(g_env[len])) == NULL)
+		{
+			_ft_free_env(env_c);
+			throw std::bad_alloc();
+		}
+		++len;
+	}
+	int i = 0;
+	while (i < 14)
+	{
+		if ((env_c[len] = strdup(env[i].c_str())) == NULL)
+		{
+			_ft_free_env(env_c);
+			throw std::bad_alloc();
+		}
+		++len;
 		++i;
 	}
-	/*
+	env_c[len] = NULL;
+
+	i = 0;
+	while (env_c[i])
+	{
+		std::cout << "env["<< i << "] = [" << env_c[i] << "]\n";
+		++i;
+	}
+	std::cout << "body = " <<  client.request.body.c_str() << std::endl;
+	//save old fd
 	old_stdin = dup(STDIN_FILENO);
 	old_stdout = dup(STDOUT_FILENO);
 
@@ -172,6 +194,7 @@ std::string		_exec(const char* cmd, Client &client)
 	int		fdin = fileno(fin);
 	int		fdout = fileno(fout);
 
+	//put body in tmp file
 	write(fdin, client.request.body.c_str(), client.request.body.size());
 	lseek(fdin, 0, SEEK_SET);
 
@@ -190,7 +213,7 @@ std::string		_exec(const char* cmd, Client &client)
 	{
 		dup2(fdin, STDIN_FILENO);
 		dup2(fdout, STDOUT_FILENO);
-		execve(cmd, NULL, env);
+		execve(cmd, NULL, env_c);
 		std::cout << INTERNALERROR;
 		exit(1);
 	}
@@ -216,8 +239,8 @@ std::string		_exec(const char* cmd, Client &client)
 	close(fdout);
 	close(old_stdin);
 	close(old_stdout);
-	*/
-	_ft_free_env(env);
+
+	_ft_free_env(env_c);
 	return output;
 }
 
@@ -274,7 +297,6 @@ bool	_cgi(Client &client)
 	//From here the executable exist and can be use
 	try
 	{
-		std::cout << "get output from " << path_exec << std::endl;
 		output = _exec(path_exec.c_str(), client);
 		if (output == INTERNALERROR)
 		{
@@ -285,7 +307,7 @@ bool	_cgi(Client &client)
 		client.response.body = _newOutput(client, output);
 		client.response.body_len = client.response.body.length();
 	}
-	catch (...)
+	catch (const std::exception &e)
 	{
 		client.response.status_code = INTERNALERROR;
 		_construct_error(client.response, client.request);

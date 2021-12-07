@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 11:47:52 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/07 16:36:07 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@
 #define UNAVAILABLE		"503 Service Unavailable"
 #define NOTIMPLEMENTED	"501 Not Implemented"
 #define INTERNALERROR	"500 Internal Server Error"
+
+extern char **g_env;
 
 struct	t_conf
 {
