@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 18:55:12 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/07 17:33:54 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -125,6 +125,13 @@ void	Server::acceptConnection(void)
 		throw(ServerFailure("Server is unable to accept the incoming connection\n"));
 	if (fd > _MaxFd)
 		_MaxFd = fd;
+	std::vector<Client*>::iterator it = Clients.begin();
+	while (it != Clients.end())
+	{
+		if ((*it)->ip == inet_ntoa(info.sin_addr))
+			return ;
+		it++;
+	}
 	newOne = new Client(fd, _RSet, _WSet, info);
 	Clients.push_back(newOne);
 }
