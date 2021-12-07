@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/06 19:41:29 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/07 11:47:52 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ class Client;
 std::string		eraseWhiteSpace(int i, int to, std::string str);
 std::string		ft_getDate(void);
 std::string		get_path(Request &request);
+std::string		getDefaultIndex(void);
 int				ft_stoi(std::string str);
 int				isFileDir(std::string path);
 bool			is_only(std::string str);
