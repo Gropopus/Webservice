@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/06 19:41:05 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/07 12:28:14 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,7 @@ void	openFile(Response &response, Request &request)
 		file.open(response.path.c_str(), std::ifstream::in);
 		if (file.is_open() == false && response.status_code == OK)
 		{
+			std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
 			response.status_code = NOTFOUND;
 			getErrors(response, request, "/404.html");
 			buildHeader(response);
@@ -156,6 +157,12 @@ void	openFile(Response &response, Request &request)
 		buffer << file.rdbuf();
 		response.body = buffer.str();
 		response.body_len = response.body.size();
+		if (response.body_len == 0)
+		{
+			response.body = getDefaultIndex();
+			response.body_len = response.body.size();
+			response.content_type = ".html";
+		}
 		file.close();
 	}
 	else

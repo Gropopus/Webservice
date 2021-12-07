@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 11:45:53 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/03 12:41:25 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/07 11:47:22 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,20 @@ std::string		GetErrorPages(std::string type)
 		page = "<html>\n\t<head>\n\t<title>Error 501</title>\n\t</head>\n\t\
 	<h1>501: Not Implemented</h1>\n\t<p>WTF ?!<br/>Like seriously?\
 	<br/>What is that fake ass method ?!</p>\n</html>";
+	return (page);
+}
+
+std::string		getDefaultIndex(void)
+{
+	std::string page;
+
+	page = "<head>\n<title>Welcome to webserv!</title>\n\
+	<style>\n\tbody {\n\twidth: 35em;\n\tmargin: 0 auto;\n\
+		font-family: Tahoma, Verdana, Arial, sans-serif;\n\t}\n\t</style>\n\t\
+	</head>\n\t<body>\n\t<h1>Welcome to webserv!</h1>\n\
+	<p>If you see this page, the webserv is working i guess</p>\n\t</body>\n\t\
+	</html>";
+
 	return (page);
 }
 
