@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 16:36:07 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/07 23:10:42 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,14 @@
 #define INTERNALERROR	"500 Internal Server Error"
 
 extern char **g_env;
+
+struct t_chunk
+{
+	size_t			size;
+	bool			finish;
+	bool			is_chunk;
+	std::string		body;
+};
 
 struct	t_conf
 {
@@ -156,7 +164,7 @@ struct Response
 class Server;
 class Client;
 //typedef std::string string;
-
+void			parseBody(Client &client);
 std::string		eraseWhiteSpace(int i, int to, std::string str);
 std::string		ft_getDate(void);
 std::string		get_path(Request &request);

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/07 17:33:54 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 00:24:40 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -130,9 +130,13 @@ void	Server::acceptConnection(void)
 	{
 		if ((*it)->ip == inet_ntoa(info.sin_addr))
 			return ;
+	//	if ((*it)->port == htons(info.sin_port))
+	//		return ;
 		it++;
 	}
 	newOne = new Client(fd, _RSet, _WSet, info);
+	newOne->chunk.is_chunk = false;
+	newOne->chunk.finish = false;
 	Clients.push_back(newOne);
 }
 
@@ -170,12 +174,14 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 	{
 		client->Buf = std::string(Buffer);
 		std::cout << "\n" << ft_getDate() << "\t";
-		std::cout << "Port:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected\n";
+		std::cout << "Port:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected";
+		std::cout << "\tIP: " << GREEN << client->ip << ":" << client->port << NC << std::endl;
 		std::cout << ft_getDate() << "\t";
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
-		client->dispatcher(*client);
+		if (client->chunk.is_chunk == false || (client->chunk.is_chunk == true && client->chunk.finish == true))
+			client->dispatcher(*client);
 		return (1);
 	}
 	return (-1);

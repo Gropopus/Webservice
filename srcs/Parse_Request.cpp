@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/01 19:32:07 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 00:45:05 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,14 @@ void	Server::ParseRequest(Client &client)
 	Request		request;
 	request.valid = true;
 
+	
+	if (client.chunk.is_chunk == true)
+	{
+		std::cout << "youi\n";
+		parseBody(client);
+		std::cout << client.chunk.size;
+		return ;
+	}
 	if (buffer[0] == '\r')
 		buffer.erase(buffer.begin());
 	if(buffer[0] == '\n')
@@ -97,21 +105,25 @@ void	Server::ParseRequest(Client &client)
 	if (request.method != "GET" && request.method != "POST"
 		&& request.method != "HEAD" && request.method != "PUT"
 		&& request.method != "CONNECT" && request.method != "TRACE"
-		&& request.method != "OPTIONS" && request.method != "DELETE")
+		&& request.method != "OPTIONS" && request.method != "DELETE"
+		&& client.chunk.is_chunk == false)
 	{
+		std::cout << "ici!!!!!\n";
 		request.status_code = BADREQUEST;
 		request.valid =  false;
 	}
 	if (request.version != "HTTP/1.1")
 		request.valid = false;
-	if (getHeader(buffer, request) == false)
-	{	
-		request.valid = false;
-		request.status_code = BADREQUEST;
-	}
+	getHeader(buffer, request);
+	//{	
+	//	request.valid = false;
+	//	request.status_code = BADREQUEST;
+	//}
 	if (request.valid == true)
 		getConf(*this, request);
 	request.server_name = this->_Name;
 	request.errors = this->_Error;
 	client.request = request;
+	if (request.method == "POST")
+		parseBody(client);
 }

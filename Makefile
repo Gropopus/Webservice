@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/12/03 12:16:17 by thsembel         ###   ########.fr        #
+#    Updated: 2021/12/07 23:38:36 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,7 @@ SRC 		=	Webserv.cpp\
 				Utils.cpp\
 				Post_handler.cpp \
 				AutoIndex.cpp \
+				Chunkistan.cpp \
 				ErrorPages.cpp
 
 INC			=	Web_serv.hpp\
