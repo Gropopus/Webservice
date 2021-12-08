@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 00:45:05 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 15:25:01 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,7 @@ void	Server::ParseRequest(Client &client)
 	
 	if (client.chunk.is_chunk == true)
 	{
-		std::cout << "youi\n";
 		parseBody(client);
-		std::cout << client.chunk.size;
 		return ;
 	}
 	if (buffer[0] == '\r')
@@ -108,7 +106,6 @@ void	Server::ParseRequest(Client &client)
 		&& request.method != "OPTIONS" && request.method != "DELETE"
 		&& client.chunk.is_chunk == false)
 	{
-		std::cout << "ici!!!!!\n";
 		request.status_code = BADREQUEST;
 		request.valid =  false;
 	}

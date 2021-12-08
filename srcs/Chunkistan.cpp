@@ -6,7 +6,7 @@
 /*   By: thsembel <thsembel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 01:06:38 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 16:02:56 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,9 @@ int				findLen(Client &client)
 		len = 0;
 	else
 		len = fromHexa(to_convert.c_str());
+
 	len = fromHexa(to_convert.c_str());
+	std::cout << "len=>" << len << "\tstr:" << to_convert << std::endl;
 	tmp = client.Buf;
 	tmp = tmp.substr(tmp.find("\r\n") + 2);
 	client.Buf = tmp;
@@ -88,7 +90,6 @@ void			fillBody(Client &client)
 	std::string		tmp;
 
 	tmp = client.Buf;
-	std::cout << client.Buf << std::endl;
 	if (tmp.size() > client.chunk.size)
 	{
 		client.chunk.body += tmp.substr(0, client.chunk.size);
@@ -101,10 +102,11 @@ void			fillBody(Client &client)
 	else
 	{
 		client.chunk.body += tmp;
+		client.request.body += tmp;
 		client.chunk.size -= tmp.size();
 		client.Buf.clear();
 	}
-	std::cout << RED << client.chunk.body << NC << std::endl;
+//	std::cout << RED << client.request.body << NC << std::endl;
 }
 
 void			getBody(Client &client)
@@ -125,30 +127,36 @@ void			getBody(Client &client)
 	{
 		client.Buf.clear();
 		client.chunk.body += client.Buf;
+		client.request.body += client.Buf;
 		client.chunk.size = 0;
 	}
 	else
 	{
 		client.chunk.size -= size;
 		client.chunk.body += client.Buf;
+		client.request.body += client.Buf;
 		client.Buf.clear();
 	}
 }
 
 void			dechunkBody(Client &client)
 {
-	if (/*std::strstr(client.Buf.c_str(), "\r\n") && */client.chunk.is_chunk == false)
+	if (std::strstr(client.Buf.c_str(), "\r\n"))
 	{
 		std::cout << "passe dans le false\n";
-		if (std::strstr(client.Buf.c_str(),"\r\n"))
-			client.chunk.size = findLen(client);
+		client.chunk.size = findLen(client);
+	//	std::cout << RED << client.chunk.size << std::endl;
+		client.chunk.is_chunk = true;
 		if (client.chunk.size == 0)
+		{
+			std::cout << CYAN << "iiiiiiiiiFINISH!!!!!!!!!!\n" << NC;
 			client.chunk.finish = true;
+		}
 		else
 			client.chunk.is_chunk = true;
 	}
-	else if (client.chunk.is_chunk == true)
-		fillBody(client);
+	//else if (client.chunk.is_chunk == true)
+	//	fillBody(client);
 	if (client.chunk.finish)
 	{
 		client.Buf.clear();
@@ -163,12 +171,6 @@ void			dechunkBody(Client &client)
 void			parseBody(Client &client)
 {
 	std::cout << "entre dans parsebody\n";
-	std::cout << "BUFF:\n" << client.Buf << std::endl;
-/*	if (client.request.headers["Transfer-Encoding"] == "chunked")
-	{
-		std::cout << "passe au dechunkage\n";
-		dechunkBody(client);
-	}*/
 	if (client.request.headers.find("Content-Length") != client.request.headers.end())
 	{
 		std::cout << "entre dans getBody\n";
@@ -178,8 +180,7 @@ void			parseBody(Client &client)
 	{
 		std::cout << "passe au dechunkage\n";
 		dechunkBody(client);
+		//client.chunk.is_chunk = true;
 	}
-	else
-		client.request.method = "BAD";
 }
 

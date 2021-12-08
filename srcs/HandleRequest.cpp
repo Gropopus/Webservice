@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/07 12:28:14 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 15:35:29 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,11 @@ void	HandlePOST(Client &client)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
+	if (client.chunk.is_chunk == true)
+	{
+		client.response.res = "HTTP/1.1 100-continue";
+		return ;
+	}
 	post_handler(client); //build post respond
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;

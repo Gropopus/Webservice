@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 23:10:42 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 16:07:23 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@
 #define CYAN    "\033[36m"      /* Cyan */
 #define WHITE   "\033[37m"      /* White */
 #define NC		"\033[0m"
-#define BUFFER_SIZE		10000
+#define BUFFER_SIZE		100000
 
 #define OK 				"200 OK"
 #define CREATED			"201 Created"

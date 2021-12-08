@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 00:24:40 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/08 14:52:18 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -180,8 +180,7 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
-		if (client->chunk.is_chunk == false || (client->chunk.is_chunk == true && client->chunk.finish == true))
-			client->dispatcher(*client);
+		client->dispatcher(*client);
 		return (1);
 	}
 	return (-1);
