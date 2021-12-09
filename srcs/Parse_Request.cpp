@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 15:25:01 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/09 13:58:03 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,8 @@ bool	getHeader(std::string &buffer, Request &request)
 				value = line.substr(i + 1);
 			if (std::isspace(value[0]) || std::isspace(key[0]) || value.empty() || key.empty())
 				return (false);
-	//		std::cout << "key: " << key << std::endl;
-	//		std::cout << "value: " << value << std::endl;
  			request.headers[key] = value;
- 			request.headers[key].pop_back(); //remove \r
+ 			request.headers[key].pop_back();//remove \r
 		}
 		else
 			return (false);
@@ -79,48 +77,47 @@ void	Server::ParseRequest(Client &client)
 	Request		request;
 	request.valid = true;
 
-	
-	if (client.chunk.is_chunk == true)
+	if (client.chunk.is_chunk == false)
 	{
-		parseBody(client);
-		return ;
-	}
-	if (buffer[0] == '\r')
-		buffer.erase(buffer.begin());
-	if(buffer[0] == '\n')
-		buffer.erase(buffer.begin());
-	ft_gnl(buffer, request.method, ' ');
-	ft_gnl(buffer, request.uri, ' ');
+		if (buffer[0] == '\r')
+			buffer.erase(buffer.begin());
+		if(buffer[0] == '\n')
+			buffer.erase(buffer.begin());
+		ft_gnl(buffer, request.method, ' ');
+		ft_gnl(buffer, request.uri, ' ');
 //	request.uri.erase(0, 1); erase /
-	ft_gnl(buffer, request.version, '\n');
-	request.version.pop_back();
-	if (request.method.size() == 0 || request.uri.size() == 0
-		|| request.version.size() == 0)
-	{
-		request.valid = false;
-		request.status_code = BADREQUEST;
+		ft_gnl(buffer, request.version, '\n');
+		request.version.pop_back();
+		if (request.method.size() == 0 || request.uri.size() == 0
+			|| request.version.size() == 0)
+		{
+			request.valid = false;
+			request.status_code = BADREQUEST;
+		}
+		if (request.method != "GET" && request.method != "POST"
+			&& request.method != "HEAD" && request.method != "PUT"
+			&& request.method != "CONNECT" && request.method != "TRACE"
+			&& request.method != "OPTIONS" && request.method != "DELETE")
+		{
+			request.status_code = BADREQUEST;
+			request.valid =  false;
+		}
+		if (request.version != "HTTP/1.1")
+			request.valid = false;
+		if ((getHeader(buffer, request)) == false)
+		{
+			request.valid = false;
+			request.status_code = BADREQUEST;
+		}
 	}
-	if (request.method != "GET" && request.method != "POST"
-		&& request.method != "HEAD" && request.method != "PUT"
-		&& request.method != "CONNECT" && request.method != "TRACE"
-		&& request.method != "OPTIONS" && request.method != "DELETE"
-		&& client.chunk.is_chunk == false)
-	{
-		request.status_code = BADREQUEST;
-		request.valid =  false;
-	}
-	if (request.version != "HTTP/1.1")
-		request.valid = false;
-	getHeader(buffer, request);
-	//{	
-	//	request.valid = false;
-	//	request.status_code = BADREQUEST;
-	//}
 	if (request.valid == true)
 		getConf(*this, request);
+	if (request.headers.find("Transfer-Encoding") != request.headers.end())
+	{
+		client.chunk.header = client.Buf;
+		client.chunk.is_chunk = true;
+	}
 	request.server_name = this->_Name;
 	request.errors = this->_Error;
 	client.request = request;
-	if (request.method == "POST")
-		parseBody(client);
 }

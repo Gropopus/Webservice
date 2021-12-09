@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/08 15:32:43 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/09 17:42:06 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,19 +318,36 @@ bool	_cgi(Client &client)
 
 void	post_handler(Client &client)
 {
+
 	std::cout << std::endl << std::endl;
 	std::cout << BLUE << "\t======POST_HANLDER DEBUG START HERE======" << NC << std::endl;
-	
 	//check if body is too large
-	if (client.request.config.max_body >= 0 && std::stoi(client.request.headers["Content-Length"]) > client.request.config.max_body)
+	if (client.request.config.max_body >= 0 
+		&& client.request.headers.find("Content-Length") != client.request.headers.end())
 	{
-		client.response.status_code = REQTOOLARGE;
-		_construct_error(client.response, client.request);
-		std::cout << "body too large" << std::endl;
-		return ;
+		if (std::stoi(client.request.headers["Content-Length"]) > client.request.config.max_body)
+		{
+			client.response.status_code = REQTOOLARGE;
+			_construct_error(client.response, client.request);
+			std::cout << "body too large" << std::endl;
+			return ;
+		}
 	}
-
-	//check if cgi
+	else if (client.request.headers.find("Transfer-Encoding") != client.request.headers.end())
+	{
+		
+		if ( client.request.config.max_body >= 0 
+			&&client.request.body.size() > (size_t)client.request.config.max_body)
+		{
+			client.response.status_code = REQTOOLARGE;
+			_construct_error(client.response, client.request);
+			std::cout << "body too large" << std::endl;
+			return ;
+		}
+		else
+			client.response.status_code = NOCONTENT;
+	}
+		//check if cgi
 	if (client.request.uri.find(client.request.config.cgi,
 			client.request.uri.length() - client.request.config.cgi.length()) != client.request.uri.npos)
 	{

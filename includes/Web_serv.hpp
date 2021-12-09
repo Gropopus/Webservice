@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/08 16:07:23 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/09 17:38:57 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ struct t_chunk
 	bool			finish;
 	bool			is_chunk;
 	std::string		body;
+	std::string		header;
 };
 
 struct	t_conf
@@ -164,7 +165,7 @@ struct Response
 class Server;
 class Client;
 //typedef std::string string;
-void			parseBody(Client &client);
+void			dechunk(Client &client);
 std::string		eraseWhiteSpace(int i, int to, std::string str);
 std::string		ft_getDate(void);
 std::string		get_path(Request &request);

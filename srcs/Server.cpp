@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 14:52:18 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/09 16:38:04 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -129,9 +129,10 @@ void	Server::acceptConnection(void)
 	while (it != Clients.end())
 	{
 		if ((*it)->ip == inet_ntoa(info.sin_addr))
+		{
+			(*it)->Buf.clear();
 			return ;
-	//	if ((*it)->port == htons(info.sin_port))
-	//		return ;
+		}
 		it++;
 	}
 	newOne = new Client(fd, _RSet, _WSet, info);

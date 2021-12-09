@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/08 15:35:29 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/09 17:42:59 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,13 +192,14 @@ void	HandleGET(Client &client)
 
 void	HandlePOST(Client &client)
 {
-	if (client.request.config.methods.find("POST") == std::string::npos)
+	if (client.request.config.methods.find("POST") == std::string::npos
+			&& client.chunk.is_chunk == false)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
 	if (client.chunk.is_chunk == true)
 	{
-		client.response.res = "HTTP/1.1 100-continue";
+		dechunk(client);
 		return ;
 	}
 	post_handler(client); //build post respond
@@ -267,7 +268,7 @@ void	Client::dispatcher(Client &client)
 	get_basics(client.request, client.response);
 	if (client.request.method == "GET")
 		HandleGET(client);
-	else if (client.request.method == "POST")
+	else if (client.request.method == "POST"|| client.chunk.is_chunk == true)
 		HandlePOST(client);
 	else if (client.request.method == "DELETE")
 		HandleDELETE(client);
