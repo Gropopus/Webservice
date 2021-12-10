@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 14:30:29 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 18:56:16 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,11 +148,21 @@ void	openFile(Response &response, Request &request)
 		file.open(response.path.c_str(), std::ifstream::in);
 		if (file.is_open() == false && response.status_code == OK)
 		{
-			std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
-			response.status_code = NOTFOUND;
-			getErrors(response, request, "/404.html");
-			buildHeader(response);
-			return ;
+			//std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
+			if (_isExist(response.path) == false)
+			{
+				response.status_code = NOTFOUND;
+				getErrors(response, request, "/404.html");
+				buildHeader(response);
+				return ;
+			}
+			else
+			{
+				response.status_code = UNAUTHORIZED;
+				getErrors(response, request, "/401.html");
+				buildHeader(response);
+				return ;
+			}
 		}
 		buffer << file.rdbuf();
 		response.body = buffer.str();
@@ -198,7 +208,10 @@ void	HandlePOST(Client &client)
 	else
 		client.response.status_code = OK;
 	if (client.chunk.is_chunk == true)
+	{
 		dechunk(client);
+		return ;
+	}
 	post_handler(client); //build post respond
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;
@@ -222,10 +235,25 @@ void	HandleDELETE(Client &client)
 	//std::cout << CYAN << path << NC << std::endl;
 	if (isFileDir(client.response.path) > 0)
 	{
+		/*if (_isExist(client.response.path) == false)
+		{
+			client.response.status_code = NOTFOUND;
+			getErrors(client.response, client.request, "/404.html");
+		}*/
+		file.open(client.response.path.c_str(), std::ifstream::in);
+		if (file.is_open() == false)
+		{
+			client.response.status_code = UNAUTHORIZED;
+			getErrors(client.response, client.request, "/401.html");
+			buildHeader(client.response);
+			client.response.res = client.response.headers + client.response.body;
+			return ;
+		}
+		file.close();
 		if (remove(client.response.path.c_str()) == 0)
 		{
-			client.response.status_code = NOCONTENT;
-			getErrors(client.response, client.request, "/204.html");
+			client.response.status_code = OK;
+			getErrors(client.response, client.request, "/200.html");
 		}
 		else
 		{

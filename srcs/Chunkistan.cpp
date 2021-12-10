@@ -6,13 +6,13 @@
 /*   By: thsembel <thsembel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 14:43:13 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 16:12:37 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Web_serv.hpp"
 # include "Client.hpp"
-
+# include <fstream>
 int		ft_getpower(int nb, int power)
 {
 	if (power < 0)
@@ -151,6 +151,7 @@ void	dechunk(Client &client)
 		{
 			client.response.status_code = REQTOOLARGE;
 			_construct_error(client.response, client.request);
+			std::cout << "oui";
 			return ;
 		}
 	}
@@ -175,6 +176,11 @@ void	dechunk(Client &client)
 		client.chunk.is_chunk = false;
 		client.response.body = client.chunk.body;
 		std::cout << client.response.body << std::endl;
+		std::cout << BLUE << client.chunk.size << NC << std::endl;
+		std::ofstream out("newbob.jpg", std::ios::out | std::ios::binary);
+
+		out.write(client.chunk.body.c_str(), client.chunk.body.size());
+		out.close();
 	}
 }
 /*void	dechunk(Client &client)
