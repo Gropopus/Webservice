@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/09 17:42:59 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 14:30:29 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,10 +198,7 @@ void	HandlePOST(Client &client)
 	else
 		client.response.status_code = OK;
 	if (client.chunk.is_chunk == true)
-	{
 		dechunk(client);
-		return ;
-	}
 	post_handler(client); //build post respond
 	buildHeader(client.response);
 	client.response.res = client.response.headers + client.response.body;

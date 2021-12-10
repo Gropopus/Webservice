@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/09 17:42:06 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 14:45:32 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -335,16 +335,7 @@ void	post_handler(Client &client)
 	}
 	else if (client.request.headers.find("Transfer-Encoding") != client.request.headers.end())
 	{
-		
-		if ( client.request.config.max_body >= 0 
-			&&client.request.body.size() > (size_t)client.request.config.max_body)
-		{
-			client.response.status_code = REQTOOLARGE;
-			_construct_error(client.response, client.request);
-			std::cout << "body too large" << std::endl;
-			return ;
-		}
-		else
+		if (client.response.status_code != REQTOOLARGE)
 			client.response.status_code = NOCONTENT;
 	}
 		//check if cgi

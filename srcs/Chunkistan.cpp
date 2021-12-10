@@ -6,7 +6,7 @@
 /*   By: thsembel <thsembel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/09 17:47:00 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 14:43:13 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,79 +61,123 @@ int			fromHexa(const char *nb)
 	}
 	return (result);
 }
-
-int				findLen(Client &client)
+/*
+ *  length := 0
+     read chunk-size, chunk-ext (if any), and CRLF
+     while (chunk-size > 0) {
+        read chunk-data and CRLF
+        append chunk-data to decoded-body
+        length := length + chunk-size
+        read chunk-size, chunk-ext (if any), and CRLF
+     }
+     read trailer field
+     while (trailer field is not empty) {
+        if (trailer field is allowed to be sent in a trailer) {
+            append trailer field to existing header fields
+        }
+        read trailer-field
+     }
+     Content-Length := length
+     Remove "chunked" from Transfer-Encoding
+     Remove Trailer from existing header fields
+}*/
+bool ft_ishexa(std::string str)
 {
-	std::string		to_convert;
-	int				len;
-	std::string		tmp;
-
-	to_convert = client.Buf;
-	if (to_convert.find("\r\n") != std::string::npos)
-			to_convert = to_convert.substr(0, to_convert.find("\r\n"));
-	while (to_convert[0] == '\n')
-		to_convert.erase(to_convert.begin());
-	if (to_convert.size() == 0)
-		len = 0;
-	else
-		len = fromHexa(to_convert.c_str());
-	len = fromHexa(to_convert.c_str());
-	tmp = client.Buf;
-	tmp = tmp.substr(tmp.find("\r\n") + 2);
-	client.Buf = tmp;
-	return (len);
+	int i = 0;
+	int j = 0;
+	bool ok = false;
+	char base[17] = "0123456789abcdef";
+	char base2[17] = "0123456789ABCDEF";
+	while (str[i])
+	{
+			j = 0;
+			while (base[j] && base2[j])
+			{
+				if ((str[i] == base[j] || str[i] == base2[j]) || str[i] == '\n'
+					|| str[i] == '\r')
+					ok = true;
+				j++;
+			}
+			if (ok == false)
+				return (false);
+			ok = false;
+		i++;
+	}
+	return (true);
 }
 
-void			fillBody(Client &client)
+void	printcode(std::string str)
 {
-	std::string		tmp;
-
-	tmp = client.Buf;
-	if (tmp.size() > client.chunk.size)
+	int i = 0;
+	int nb = 0;
+	while (str[i])
 	{
-		client.chunk.body += tmp.substr(0, client.chunk.size);
-		tmp = tmp.substr(client.chunk.size + 1);
-		client.Buf.clear();
-		client.Buf = tmp;
-		client.chunk.size = 0;
-	}
-	else
-	{
-		client.chunk.body += tmp;
-		client.chunk.size -= tmp.size();
-		std::cout << RED << client.chunk.body << NC << std::endl;
-		client.Buf.clear();
+		nb = str[i];
+		std::cout << nb << "\t";
+		i++;
 	}
 }
 
-
-/*void			getBody(Client &client, t_chunk &chunk, size_t *len)
+void	get_len(Client &client)
 {
-	size_t	size;
+	int			len = 0;
+	std::string	buf = client.Buf;
+	std::string	line;
 
-	if (client.chunk.size == 0)
-		client.chunk.size = *len;
-	if (client.chunk.size < 0)
+	while (!buf.empty())
 	{
-		client.request.method = "BAD";
+		ft_gnl(buf, line, '\n');
+		if (ft_ishexa(line) == true)
+		{
+			line = line.substr(0, line.find("\r"));
+			len = fromHexa(line.c_str());
+			client.chunk.size += len;
+		}
+	}
+}
+
+void	dechunk(Client &client)
+{
+	std::string buf = client.Buf;
+	std::string line;
+	if (client.Buf.find("HTTP/1.1") != std::string::npos)
+	{
+		client.chunk.header = client.Buf;
 		return ;
 	}
-	size = client.Buf.size();
-	std::cout << RED << client.chunk.size << std::endl;
-	std::cout << BLUE << size << NC << std::endl;
-	if (size >= client.chunk.size)
+	if (client.request.config.max_body >= 0)
 	{
-		chunk.body += client.Buf;
-		client.chunk.size = 0;
+		if (client.Buf.size() > (size_t)client.request.config.max_body)
+		{
+			client.response.status_code = REQTOOLARGE;
+			_construct_error(client.response, client.request);
+			return ;
+		}
 	}
-	else
+	get_len(client);
+	if (buf != "0\r\n\r\n\0")
+		while (!buf.empty())
+		{
+			ft_gnl(buf, line, '\n');
+			if (ft_ishexa(line) == false)
+			{
+				client.chunk.body += line;
+				if (buf == "0\r\n\r\n\0")
+				{
+					client.chunk.body.pop_back();
+					client.chunk.body.pop_back();
+					break;
+				}
+			}
+		}
+	if (client.chunk.body.size() == client.chunk.size)
 	{
-		client.chunk.size -= size;
-		chunk.body += client.Buf;
-		client.Buf.clear();
+		client.chunk.is_chunk = false;
+		client.response.body = client.chunk.body;
+		std::cout << client.response.body << std::endl;
 	}
-}*/
-void	dechunk(Client &client)
+}
+/*void	dechunk(Client &client)
 {
 	std::string	head = client.Buf.substr(0, client.Buf.find("\r\n\r\n"));
 	std::string	chunks = client.Buf.substr(client.Buf.find("\r\n\r\n") + 4, client.Buf.size() - 1);
@@ -154,4 +198,4 @@ void	dechunk(Client &client)
 	client.request.body = client.chunk.body;
 	std::cout << client.chunk.body << std::endl;
 	client.chunk.is_chunk = false;
-}
+}*/

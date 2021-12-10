@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:29:17 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/07 17:28:57 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 12:45:53 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 # include "Web_serv.hpp"
@@ -20,6 +20,7 @@ Client::Client(int filed, fd_set *r, fd_set *w, struct sockaddr_in info)
 	fcntl(fd, F_SETFL, O_NONBLOCK);
 	FD_SET(fd, rSet);
 	FD_SET(fd, wSet);
+	chunk.size = 0;
 	std::cout << "\n" << ft_getDate() << "\t";
 	std::cout << "new connection from IP\t\t[" << GREEN << ip << ":" <<  port << NC;
 	std::cout << "]" << std::endl;

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/09 17:38:57 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 14:42:59 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@
 #define CYAN    "\033[36m"      /* Cyan */
 #define WHITE   "\033[37m"      /* White */
 #define NC		"\033[0m"
-#define BUFFER_SIZE		100000
+#define BUFFER_SIZE		1000
 
 #define OK 				"200 OK"
 #define CREATED			"201 Created"
@@ -165,6 +165,7 @@ struct Response
 class Server;
 class Client;
 //typedef std::string string;
+void    _construct_error(Response &response, Request &request);
 void			dechunk(Client &client);
 std::string		eraseWhiteSpace(int i, int to, std::string str);
 std::string		ft_getDate(void);
