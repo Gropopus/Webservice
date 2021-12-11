@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 18:56:16 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/11 13:32:28 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void	openFile(Response &response, Request &request)
 {
 	std::ifstream		file;
 	std::stringstream	buffer;
+	int ret;
 
 	if (response.status_code == NOTALLOWED)
 	{
@@ -143,26 +144,37 @@ void	openFile(Response &response, Request &request)
 	if (response.path == "autoIndex")
 		return ;
 	std::cout << RED << response.path << NC << "\n";
-	if (isFileDir(response.path))
+	if ((ret = isFileDir(response.path)))
 	{
 		file.open(response.path.c_str(), std::ifstream::in);
-		if (file.is_open() == false && response.status_code == OK)
+		std::cout << "ret = " << ret << std::endl;
+		if (ret == 1)
+		{//file
+			if (file.is_open() == false && response.status_code == OK)
+			{
+				std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
+				if (_isExist(response.path) == false)
+				{
+					response.status_code = NOTFOUND;
+					getErrors(response, request, "/404.html");
+					buildHeader(response);
+					return ;
+				}
+				else
+				{
+					response.status_code = UNAUTHORIZED;
+					getErrors(response, request, "/401.html");
+					buildHeader(response);
+					return ;
+				}
+			}
+		}
+		if (ret == 2)// directory
 		{
-			//std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
-			if (_isExist(response.path) == false)
-			{
-				response.status_code = NOTFOUND;
-				getErrors(response, request, "/404.html");
-				buildHeader(response);
-				return ;
-			}
-			else
-			{
-				response.status_code = UNAUTHORIZED;
-				getErrors(response, request, "/401.html");
-				buildHeader(response);
-				return ;
-			}
+			response.status_code = FORBIDDEN;
+			getErrors(response, request, "/403.html");
+			buildHeader(response);
+			return ;
 		}
 		buffer << file.rdbuf();
 		response.body = buffer.str();
@@ -177,6 +189,7 @@ void	openFile(Response &response, Request &request)
 	}
 	else
 	{
+		std::cout << "????\n";
 		getErrors(response, request, "/403.html");
 		response.status_code = FORBIDDEN;
 		buildHeader(response);
@@ -235,11 +248,6 @@ void	HandleDELETE(Client &client)
 	//std::cout << CYAN << path << NC << std::endl;
 	if (isFileDir(client.response.path) > 0)
 	{
-		/*if (_isExist(client.response.path) == false)
-		{
-			client.response.status_code = NOTFOUND;
-			getErrors(client.response, client.request, "/404.html");
-		}*/
 		file.open(client.response.path.c_str(), std::ifstream::in);
 		if (file.is_open() == false)
 		{
