@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 15:51:45 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 16:04:30 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	buildHeader(Response &response)
 	response.headers += "Content-Type: " + response.content_type + "\r\n";
 	response.headers += "Content-Length: " + std::to_string(response.body_len) + "\r\n";
 	response.headers += "Date: " + ft_getDate() + "\r\n";
-	std::cout << YELLOW << response.path << NC << std::endl;
 	response.headers += "Last-Modified: " + getLastModified(response.path) + "\r\n";;
 	response.headers += "Location: " + response.location + "\r\n";
 	if (response.name != "")
@@ -57,7 +56,6 @@ std::string get_path(Request &request, Response &response)
 
 	while (request.uri.back() == '/')
 		request.uri.pop_back();
-	std::cout << request.uri;
 	if ((request.uri == request.config.location
 		&& request.uri == "/") || is_only(request.uri) == true)
 	{
@@ -143,16 +141,13 @@ void	openFile(Response &response, Request &request)
 	response.path = get_path(request, response);
 	if (response.path == "autoIndex")
 		return ;
-	std::cout << RED << response.path << NC << "\n";
 	if ((ret = isFileDir(response.path)))
 	{
 		file.open(response.path.c_str(), std::ifstream::in);
-		std::cout << "ret = " << ret << std::endl;
 		if (ret == 1 || ret == -1)
 		{//file
 			if (file.is_open() == false && response.status_code == OK)
 			{
-				//std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
 				if (_isExist(response.path) == false)
 				{
 					response.status_code = NOTFOUND;
@@ -189,13 +184,11 @@ void	openFile(Response &response, Request &request)
 	}
 	else
 	{
-		std::cout << "????\n";
 		getErrors(response, request, "/403.html");
 		response.status_code = FORBIDDEN;
 		buildHeader(response);
 		return ;
 	}
-	std::cout << response.res;
 	if (response.path.find_last_of('.') != response.path.npos)
 		response.content_type = getContent_type(response.path.substr(response.path.find_last_of('.')));
 	else
