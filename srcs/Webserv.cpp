@@ -6,12 +6,16 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:19:05 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 14:44:24 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 15:21:00 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Web_serv.hpp"
 # include "Env.hpp"
+#include <stdlib.h>
+#include <stdio.h>
+
+//void destructor() attribute((destructor));
 
 char **g_env;
 
@@ -62,6 +66,9 @@ static string	_getFile(char *file)
 	return content;
 }
 
+
+void destructor() __attribute__((destructor));
+
 int		main(int ac, char **av, char **env)
 {
 	g_env = env;
@@ -83,6 +90,11 @@ int		main(int ac, char **av, char **env)
 		std::cerr << e.what() << '\n';
 		return 0;
 	}
-	exit(EXIT_SUCCESS);
+//	exit(EXIT_SUCCESS);
 	return (0);
+}
+
+void destructor()
+{
+    system("leaks webserv");
 }
