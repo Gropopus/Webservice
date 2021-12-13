@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/11 13:32:28 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 11:33:57 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,7 @@ void	HandleDELETE(Client &client)
 {
 	std::ifstream		file;
 	std::stringstream	buffer;
+	int					ret;
 
 	client.response.status_code = OK;
 	if (client.request.config.methods.find("DELETE") == std::string::npos)
@@ -246,7 +247,7 @@ void	HandleDELETE(Client &client)
 	}
 	client.response.path = get_path(client.request, client.response);
 	//std::cout << CYAN << path << NC << std::endl;
-	if (isFileDir(client.response.path) > 0)
+	if ((ret = isFileDir(client.response.path)) > 0)
 	{
 		file.open(client.response.path.c_str(), std::ifstream::in);
 		if (file.is_open() == false)
@@ -260,8 +261,18 @@ void	HandleDELETE(Client &client)
 		file.close();
 		if (remove(client.response.path.c_str()) == 0)
 		{
-			client.response.status_code = OK;
-			getErrors(client.response, client.request, "/200.html");
+			if (ret == 1)
+			{
+				client.response.status_code = OK;
+				getErrors(client.response, client.request, "/200.html");
+				client.response.body = "\tFile Deleted\n";
+			}
+			else if (ret == 2)
+			{
+				client.response.status_code = OK;
+				getErrors(client.response, client.request, "/200.html");
+				client.response.body = "\tDirectory Deleted\n";
+			}
 		}
 		else
 		{
