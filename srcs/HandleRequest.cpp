@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 15:31:58 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 15:50:52 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,8 +264,6 @@ bool	_checkCgi(Client &client)
 			return true;
 		++i;
 	}
-
-	std::cout << "================================NOT CGI :)\n";
 	return false;
 }
 
@@ -277,18 +275,19 @@ void	HandleGET(Client &client)
 		client.response.status_code = OK;
 	if (_checkCgi(client) == true)
 	{
-		client.request.query_string = _getQueryString(client.request.uri);
-		client.request.uri = _getNewUri(client.request.uri);
-		_cgi(client);
-		buildHeader(client.response);
-		client.response.res = client.response.headers + client.response.body;
+		if (client.response.status_code != OK)
+			_construct_error(client.response, client.request);
+		else
+		{
+			client.request.query_string = _getQueryString(client.request.uri);
+			client.request.uri = _getNewUri(client.request.uri);
+			_cgi(client);
+		}
 	}
 	else
-	{
 		openFile(client.response, client.request);
-		buildHeader(client.response);
-		client.response.res = client.response.headers + client.response.body;
-	}
+	buildHeader(client.response);
+	client.response.res = client.response.headers + client.response.body;
 }
 
 void	HandlePOST(Client &client)

@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 15:10:40 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 15:50:10 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,7 +310,11 @@ bool	_cgi(Client &client)
 
 void	post_handler(Client &client)
 {
-
+	if (client.response.status_code != OK)
+	{
+		_construct_error(client.response, client.request);
+		return ;
+	}
 	std::cout << std::endl << std::endl;
 	std::cout << BLUE << "\t======POST_HANLDER DEBUG START HERE======" << NC << std::endl;
 	//check if body is too large
@@ -321,7 +325,6 @@ void	post_handler(Client &client)
 		{
 			client.response.status_code = REQTOOLARGE;
 			_construct_error(client.response, client.request);
-			std::cout << "body too large" << std::endl;
 			return ;
 		}
 	}
