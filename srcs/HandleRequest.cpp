@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 15:31:58 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 15:48:30 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,11 +148,11 @@ void	openFile(Response &response, Request &request)
 	{
 		file.open(response.path.c_str(), std::ifstream::in);
 		std::cout << "ret = " << ret << std::endl;
-		if (ret == 1)
+		if (ret == 1 || ret == -1)
 		{//file
 			if (file.is_open() == false && response.status_code == OK)
 			{
-				std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
+				//std::cout << CYAN << "OUI?\n" << request.config.root << request.uri << "->" << request.config.index << "<-" << std::endl;
 				if (_isExist(response.path) == false)
 				{
 					response.status_code = NOTFOUND;
