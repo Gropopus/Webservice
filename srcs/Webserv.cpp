@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:19:05 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 16:36:26 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 12:18:42 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ static string	_getFile(char *file)
 	return content;
 }
 
-
 int		main(int ac, char **av, char **env)
 {
 	g_env = env;
@@ -70,5 +69,6 @@ int		main(int ac, char **av, char **env)
 		std::cerr << e.what() << '\n';
 		return 0;
 	}
+	exit(EXIT_SUCCESS);
 	return (0);
 }

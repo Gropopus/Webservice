@@ -6,7 +6,7 @@
 /*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 13:29:17 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 12:45:53 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 12:10:32 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 # include "Web_serv.hpp"
@@ -45,6 +45,8 @@ Client::~Client(void)
 		close(write_fd);
 		FD_CLR(write_fd, wSet);
 	}
+	request.clear();
+	response.clear();
 	std::cout << "\n" << ft_getDate() << "\t";
 	std::cout << "connection closed from IP\t[" << GREEN << ip << ":" <<  port << NC;
 	std::cout << "]" << std::endl;

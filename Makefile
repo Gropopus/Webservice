@@ -6,14 +6,14 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/12/07 23:38:36 by thsembel         ###   ########.fr        #
+#    Updated: 2021/12/13 11:57:52 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = webserv
 
 CC = clang++
-FLAGS = -Wall -Wextra -Werror -std=c++98 #-g -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 SRCS_DIR = ./srcs/
 

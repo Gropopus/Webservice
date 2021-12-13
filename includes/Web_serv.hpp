@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/10 18:23:25 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 12:10:29 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ struct Request
 
 	void	clear()
 	{
+		headers.clear();
 		method.clear();
 		uri.clear();
 		version.clear();

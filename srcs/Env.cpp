@@ -6,11 +6,13 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/11/30 14:32:49 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 12:33:18 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Env.hpp"
+
+bool g_exit = true;
 
 bool			isdouble_serv(std::vector<Server> _Servers, Server tmp)
 {
@@ -157,20 +159,21 @@ void	Env::handleRequests(std::vector<Server>::iterator server)
 		if (FD_ISSET(_Client->fd, &_WriteSet))
 			if (!server->writeResponse(it_client))
 				break ;
-/*		if (_Client->write_fd != -1)
-			if (FD_ISSET(_Client->write_fd, &_WriteSet))
-				_Client->writeFile();
-		if (_Client->read_fd != -1)
-			if (FD_ISSET(_Client->read_fd, &_ReadSet))
-				_Client->readFile();*/
 		it_client++;
 	}
+}
+
+void	handleSignals(int sig)
+{
+	std::cout << "\b  ";
+	std::cout << std::endl << RED << "Exiting..." << NC << std::endl;
+	if (SIGINT == sig)
+		g_exit = false;
 }
 
 void	Env::launchWebserv(void)
 {
 	int ret = 0;
-	bool run = true;
 
 	try
 	{
@@ -182,7 +185,7 @@ void	Env::launchWebserv(void)
 		return ;
 	}
 	std::cout << GREEN << "Webserv ready !\n" << NC;
-	while (run == true)
+	while (g_exit == true)
 	{
 		_ReadSet = _RSet;
 		_WriteSet = _WSet;
@@ -192,7 +195,7 @@ void	Env::launchWebserv(void)
 	for (std::vector<Server>::iterator server(_Servers.begin()); server != _Servers.end(); ++server)
 		{
 			handleRequests(server);
-			if (FD_ISSET(server->getFd(), &_ReadSet))
+			if (FD_ISSET(server->getFd(), &_ReadSet) && g_exit == true)
 			{
 				try
 				{
@@ -203,6 +206,7 @@ void	Env::launchWebserv(void)
 					std::cerr << RED <<  "Error: " << NC << e.what() << std::endl;
 				}
 			}
+			signal(SIGINT, handleSignals);
 		//	if (!server->_tmp_clients.empty())
 		//		if (FD_ISSET(server->_tmp_clients.front(), &_WriteSet))
 				//erreur 503
