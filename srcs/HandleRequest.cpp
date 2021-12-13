@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 14:54:52 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 15:31:58 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,34 @@ void	openFile(Response &response, Request &request)
 		response.content_type = "not found";
 }
 
+std::string	_getQueryString(std::string uri)
+{
+	size_t		pos_intero;
+	std::string	query;
+
+	pos_intero = uri.find_last_of("?");
+
+	if (pos_intero == uri.npos)
+		query = "";
+	else
+		query = uri.substr(pos_intero + 1);
+	return query;
+}
+
+std::string	_getNewUri(std::string uri)
+{
+	size_t		pos_intero;
+	std::string	query;
+
+	pos_intero = uri.find_last_of("?");
+
+	if (pos_intero == uri.npos)
+		query = uri;
+	else
+		query = uri.substr(0, pos_intero);
+	return query;
+}
+
 std::string	_getFileExtension(std::string uri)
 {
 	size_t		pos_intero;
@@ -211,11 +239,12 @@ std::string	_getFileExtension(std::string uri)
 	pos_intero = uri.find_last_of("?");
 	pos_dot = uri.find_last_of(".", pos_intero);
 
+	if (pos_dot == uri.npos)
+		return "";
 	if (pos_intero == uri.npos)
 		extension = uri.substr(pos_dot);
 	else
 		extension = uri.substr(pos_dot, pos_intero - pos_dot);
-	std::cout << BLUE << "\n\nextension of request is [" << extension << "]\n\n" << NC;
 	return extension;
 }
 
@@ -223,20 +252,21 @@ bool	_checkCgi(Client &client)
 {
 	std::string cgi[4];
 	cgi[0] = ".py";
-	cgi[1] = ".php";
 	cgi[2] = ".pl";
 	cgi[3] = client.request.config.cgi;
 	std::string	extension = _getFileExtension(client.request.uri);
-	bool isCGI = false;
-
+	if (extension == "")
+		return false;
 	int i = 0;
 	while (i < 4)
 	{
 		if (extension == cgi[i])
-			isCGI = true;
+			return true;
 		++i;
 	}
-	return isCGI;
+
+	std::cout << "================================NOT CGI :)\n";
+	return false;
 }
 
 void	HandleGET(Client &client)
@@ -245,10 +275,13 @@ void	HandleGET(Client &client)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
-	//if cgi
 	if (_checkCgi(client) == true)
 	{
-		;
+		client.request.query_string = _getQueryString(client.request.uri);
+		client.request.uri = _getNewUri(client.request.uri);
+		_cgi(client);
+		buildHeader(client.response);
+		client.response.res = client.response.headers + client.response.body;
 	}
 	else
 	{

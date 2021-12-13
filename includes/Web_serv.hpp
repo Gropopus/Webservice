@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 12:10:29 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 15:03:37 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ struct Request
 	std::string							status_code;
 	std::string							server_name;
 	std::string							errors;
+	std::string							query_string;
 
 	void	clear()
 	{
@@ -183,4 +184,5 @@ std::string		get_path(Request &request);
 void	buildHeader(Response &response);
 void			buildHeader(Response &response);
 void			getErrors(Response &response, Request &request, std::string error);
+bool	_cgi(Client &client);
 #endif

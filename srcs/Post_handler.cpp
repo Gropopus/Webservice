@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/10 17:29:39 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 15:10:40 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	_prep_env(Client &client, std::string path, string name, string env[14])
 	if (client.request.method == "GET")
 	{
 		env[11] = "QUERY_STRING=";
-		env[11] += ""; //placeholder need to do
+		env[11] += client.request.query_string; //placeholder need to do
 	}
 
 	//client information
@@ -178,14 +178,6 @@ std::string		_exec(const char* cmd, Client &client)
 	}
 	env_c[len] = NULL;
 
-	// i = 0;
-	// while (env_c[i])
-	// {
-	// 	std::cout << "env["<< i << "] = [" << env_c[i] << "]\n";
-	// 	++i;
-	// }
-	//std::cout << "body = " <<  client.request.body.c_str() << std::endl;
-	//save old fd
 	old_stdin = dup(STDIN_FILENO);
 	old_stdout = dup(STDOUT_FILENO);
 
