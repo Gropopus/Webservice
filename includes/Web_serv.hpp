@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/10 14:42:59 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 12:10:29 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,7 @@ struct Request
 
 	void	clear()
 	{
+		headers.clear();
 		method.clear();
 		uri.clear();
 		version.clear();
@@ -173,6 +174,7 @@ std::string		get_path(Request &request);
 std::string		getDefaultIndex(void);
 int				ft_stoi(std::string str);
 int				isFileDir(std::string path);
+bool			_isExist(std::string path);
 bool			is_only(std::string str);
 void			ft_gnl(std::string &buffer, std::string &line, char to);
 void			create_autoIndex(Request &request, Response &response);

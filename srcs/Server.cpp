@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/09 16:38:04 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 14:47:42 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -19,7 +19,6 @@ Server::Server(void) : _Port(-1), _Fd(-1), _MaxFd(-1) { return ;}
 Server::~Server(void)
 {
  	Client		*client = NULL;
-
 	if (_Fd != -1)
  	{
  		for (std::vector<Client*>::iterator it(Clients.begin()); it != Clients.end(); ++it)
@@ -34,6 +33,7 @@ Server::~Server(void)
  			close(_tmp_clients.front());
  			_tmp_clients.pop();
  		}
+		config.clear();
  		Clients.clear();
  		close(_Fd);
  		FD_CLR(_Fd, _RSet);
@@ -109,6 +109,7 @@ void	Server::init(fd_set *readSet, fd_set *writeSet, fd_set *rSet, fd_set *wSet)
 		throw(ServerFailure("fcntl function returned an error."));
 	FD_SET(_Fd, _RSet);
 	_MaxFd = _Fd;
+	std::cout << ft_getDate() << std::endl;
 	std::cout << "Port:\t[" << GREEN << _Port << NC << "]\tlistening...\n";
 }
 

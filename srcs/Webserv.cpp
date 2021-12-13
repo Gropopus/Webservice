@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:19:05 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/07 16:36:26 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/13 14:44:24 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,19 @@
 # include "Env.hpp"
 
 char **g_env;
+
+void			printfHeader(void)
+{
+std::cout << CYAN << "\e[1m" << " __      __          __										\n\
+/\\ \\  __/\\ \\        /\\ \\                                      \n\
+\\ \\ \\/\\ \\ \\ \\     __\\ \\ \\____    ____     __   _ __   __  __  \n\
+ \\ \\ \\ \\ \\ \\ \\  /'__`\\ \\ '__`\\  /',__\\  /'__`\\/\\`'__\\/\\ \\/\\ \\ \n\
+  \\ \\ \\_/ \\_\\ \\/\\  __/\\ \\ \\L\\ \\/\\__, `\\/\\  __/\\ \\ \\/ \\ \\ \\_/ |\n\
+   \\ `\\___x___/\\ \\____\\\\ \\_,__/\\/\\____/\\ \\____\\\\ \\_\\  \\ \\___/ \n\
+    '\\/__//__/  \\/____/ \\/___/  \\/___/  \\/____/ \\/_/   \\/__/  \n\
+                                                              \n";
+std::cout << "By " << YELLOW << "\e[1m" << "thsembel & gmaris\n" << NC << std::endl;
+}
 
 static bool		_isConf(char *file)
 {
@@ -49,7 +62,6 @@ static string	_getFile(char *file)
 	return content;
 }
 
-
 int		main(int ac, char **av, char **env)
 {
 	g_env = env;
@@ -61,6 +73,7 @@ int		main(int ac, char **av, char **env)
 	}
 	try
 	{
+		printfHeader();
 		Env env(_getFile(av[1]));
 		env.launchWebserv();
 	}
@@ -70,5 +83,6 @@ int		main(int ac, char **av, char **env)
 		std::cerr << e.what() << '\n';
 		return 0;
 	}
+	exit(EXIT_SUCCESS);
 	return (0);
 }
