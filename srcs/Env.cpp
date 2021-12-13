@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 12:33:18 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 14:52:50 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ void	Env::initFd(void)
  	FD_ZERO(&_WriteSet);
  	_Timeout.tv_sec = 1;
  	_Timeout.tv_usec = 0;
+	std::cout << ft_getDate() << std::endl;
  	while (it != _Servers.end())
  	{
  		(*it).init(&_ReadSet, &_WriteSet, &_RSet, &_WSet);
