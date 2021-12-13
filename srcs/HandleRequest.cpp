@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 14:30:29 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 14:22:22 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,15 +179,60 @@ void	openFile(Response &response, Request &request)
 		response.content_type = "not found";
 }
 
+std::string	_getFileExtension(std::string uri)
+{
+	size_t		pos_intero;
+	size_t		pos_dot;
+	std::string	extension;
+
+	pos_intero = uri.find_last_of("?");
+	pos_dot = uri.find_last_of(".", pos_intero);
+
+	if (pos_intero == uri.npos)
+		extension = uri.substr(pos_dot);
+	else
+		extension = uri.substr(pos_dot, pos_intero - pos_dot);
+	std::cout << BLUE << "\n\nextension of request is [" << extension << "]\n\n" << NC;
+	return extension;
+}
+
+bool	_checkCgi(Client &client)
+{
+	std::string cgi[4];
+	cgi[0] = ".py";
+	cgi[1] = ".php";
+	cgi[2] = ".pl";
+	cgi[3] = client.request.config.cgi;
+	std::string	extension = _getFileExtension(client.request.uri);
+	bool isCGI = false;
+
+	int i = 0;
+	while (i < 4)
+	{
+		if (extension == cgi[i])
+			isCGI = true;
+		++i;
+	}
+	return isCGI;
+}
+
 void	HandleGET(Client &client)
 {
 	if (client.request.config.methods.find("GET") == std::string::npos)
 		client.response.status_code = NOTALLOWED;
 	else
 		client.response.status_code = OK;
-	openFile(client.response, client.request);
-	buildHeader(client.response);
-	client.response.res = client.response.headers + client.response.body;
+	//if cgi
+	if (_checkCgi(client) == true)
+	{
+		;
+	}
+	else
+	{
+		openFile(client.response, client.request);
+		buildHeader(client.response);
+		client.response.res = client.response.headers + client.response.body;
+	}
 }
 
 void	HandlePOST(Client &client)

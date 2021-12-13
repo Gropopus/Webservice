@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/10 14:45:32 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/10 17:29:39 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,13 +178,13 @@ std::string		_exec(const char* cmd, Client &client)
 	}
 	env_c[len] = NULL;
 
-	i = 0;
-	while (env_c[i])
-	{
-		std::cout << "env["<< i << "] = [" << env_c[i] << "]\n";
-		++i;
-	}
-	std::cout << "body = " <<  client.request.body.c_str() << std::endl;
+	// i = 0;
+	// while (env_c[i])
+	// {
+	// 	std::cout << "env["<< i << "] = [" << env_c[i] << "]\n";
+	// 	++i;
+	// }
+	//std::cout << "body = " <<  client.request.body.c_str() << std::endl;
 	//save old fd
 	old_stdin = dup(STDIN_FILENO);
 	old_stdout = dup(STDOUT_FILENO);
@@ -344,16 +344,9 @@ void	post_handler(Client &client)
 	{
 		_cgi(client);
 	}
-
-
-	if (client.request.headers["Content-Type"].find("multipart/form-data") !=
-		client.request.headers["Content-Type"].npos)
-	{
-	//	std::cout << "got multiple post to handle" << std::endl << std::endl;
-	}
 	else
 	{
-	//	std::cout << RED << "only one part" << std::endl;
+		std::cout << RED << "handle like a put request" << std::endl << NC;
 	}
 
 	std::cout << BLUE << "\t======POST_HANLDER DEBUG  END  HERE======" << NC << std::endl;

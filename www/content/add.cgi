@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/python
 
 import cgi, cgitb
 cgitb.enable()
 
 input_data = cgi.FieldStorage()
 
-print('Content-Type: text/html') # HTML is following
+phrint('Content-Type: text/html') # HTML is following
 print('')                         # Leave a blank line
 print('<h1>Addition Results</h1>')
 try:
