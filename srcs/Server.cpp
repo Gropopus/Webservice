@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 14:49:26 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 16:30:15 by thsembel         ###   ########.fr       */
 /*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -199,29 +199,6 @@ int		Server::writeResponse(std::vector<Client*>::iterator it)
 		<< client->response.res << NC << std::endl;
 	size = write(client->fd, client->response.res.c_str(), client->response.res.size());
 	client->response.clear();
-//	client->etFdSets(false, 1);
-	/*	if (size < client->response.size())
-			client->response = client->response.substr(size);
-		else
-		{
-			client->response.clear();
-			client->setToStandBy();
-		}
-		client->last_date = ft_getDate();
-	}
-	if (client->status == STANDBY)
-	{
-		if (getTimeDiff(client->last_date) >= TIMEOUT)
-			client->status = DONE;
-	}
-	if (client->status == DONE)
-	{
-			delete client;
-			Clients.erase(it);
-			return (0);
-	}
-	else
-		_Manage.dispatcher(*client);*/
 	return (1);
 }
 
