@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/14 17:48:36 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 18:24:05 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,29 +139,35 @@ void	get_len(Client &client)
 void	dechunk(Client &client)
 {
 	std::string buf = client.Buf;
-	//std::string line;
 	std::string len_s;
 	std::string	tmp;
 
 	if (client.chunk.size == 0)
 	{
 		len_s = buf.substr(0, buf.find("\r\n"));
-		buf = buf.substr(buf.find("\r\n") + 2); 
+		if (buf.find("\r\n") != buf.npos)
+			buf = buf.substr(buf.find("\r\n") + 2); 
+		else
+			buf = "";
 		client.chunk.size = fromHexa(len_s.c_str());
-	std::cout << YELLOW << "client.chunk.size = " << len_s << NC << std::endl;
 	}
 
+		std::cout << RED << "here" << std::endl << NC;;
 	tmp = buf.substr(0, client.chunk.size);
 	client.chunk.size -= tmp.size();
 	client.chunk.body += tmp;
 	
 	std::string asap;
 	asap = buf.substr(tmp.size());
+		std::cout << RED << "here" << std::endl << NC;;
 	while (asap != "")
 	{
 		asap.erase(0, 2);
 		len_s = asap.substr(0, asap.find("\r\n"));
-		buf = asap.substr(asap.find("\r\n") + 2); 
+		if (asap.find("\r\n") != asap.npos)
+			buf = asap.substr(asap.find("\r\n") + 2);
+		else
+			buf = "";
 		client.chunk.size = fromHexa(len_s.c_str());
 		tmp = buf.substr(0, client.chunk.size);
 		client.chunk.size -= tmp.size();
@@ -176,39 +182,10 @@ void	dechunk(Client &client)
 		client.chunk.is_chunk = false;
 		client.request.body += client.chunk.body;
 		client.chunk.body.clear();
+
 		std::ostringstream os;
 		os << client.request.body.size();
 		std::string str(os.str());
 		client.request.headers["Content-Length"] = str;
-		std::cout << YELLOW << "fucking total len = " << client.request.headers["Content-Length"] << std::endl;
-		
-		//client.chunk.is_chunk = true;
-
-		//std::string tmp_response = "HTTP/1.1 100 Continue\r\n\r\n\r\n";
-		//std::cout << BLUE << "\tSend continue" << NC << std::endl;
-		//write(client.fd, tmp_response.c_str(), tmp_response.size());
-		
 	}
 }
-/*void	dechunk(Client &client)
-{
-	std::string	head = client.Buf.substr(0, client.Buf.find("\r\n\r\n"));
-	std::string	chunks = client.Buf.substr(client.Buf.find("\r\n\r\n") + 4, client.Buf.size() - 1);
-	std::string	subchunk = chunks.substr(0, 100);
-	std::string	body = "";
-	int			chunksize = strtol(subchunk.c_str(), NULL, 16);
-	size_t		i = 0;
-
-	while (chunksize)
-	{
-		i = chunks.find("\r\n", i) + 2;
-		body += chunks.substr(i, chunksize);
-		i += chunksize + 2;
-		subchunk = chunks.substr(i, 100);
-		chunksize = strtol(subchunk.c_str(), NULL, 16);
-	}
-	client.chunk.body += head + "\r\n\r\n" + body + "\r\n\r\n";
-	client.request.body = client.chunk.body;
-	std::cout << client.chunk.body << std::endl;
-	client.chunk.is_chunk = false;
-}*/
