@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 14:52:50 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/14 17:31:52 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,10 @@ void	Env::handleRequests(std::vector<Server>::iterator server)
 	{
 		_Client = *it_client;
 		if (FD_ISSET(_Client->fd, &_ReadSet))
+		{
 			if (!server->readRequest(it_client))
 				break ;
+		}
 		if (FD_ISSET(_Client->fd, &_WriteSet))
 			if (!server->writeResponse(it_client))
 				break ;

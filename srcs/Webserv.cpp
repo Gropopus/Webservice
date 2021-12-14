@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:19:05 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 15:21:00 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/13 17:05:33 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,5 @@ int		main(int ac, char **av, char **env)
 
 void destructor()
 {
-    system("leaks webserv");
+   // system("leaks webserv");
 }

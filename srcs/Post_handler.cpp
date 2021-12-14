@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 15:50:10 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 18:04:30 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	_construct_error(Response &response, Request &request)
 }
 
 /*
-** Tell if file exist
+** Tell if path exist
 */
 bool	_isExist(string path)
 {
@@ -61,7 +61,21 @@ bool	_isExist(string path)
 }
 
 /*
-** Tell if file is executable
+** Tell if path is dir
+*/
+bool	_isDir(string path)
+{
+	struct stat	sb;
+
+	stat(path.c_str(), &sb);
+	if (S_ISDIR(sb.st_mode))
+		return true;
+	else
+		return false;
+}
+
+/*
+** Tell if path is exec
 */
 bool	_isExec(string path)
 {
@@ -149,7 +163,7 @@ std::string		_exec(const char* cmd, Client &client)
 	char **env_c;
 
 	//env prep
-	_prep_env(client, cmd, cmd, env);
+	_prep_env(client, cmd, client.request.uri, env);
 	int len = 0;
 	while (g_env[len])
 		++len;
@@ -247,6 +261,7 @@ std::string get_path(Request &request)
 		path = request.config.root + request.uri.substr(request.uri.find_last_of('/'));
 	else
 		path = request.config.root + request.uri;
+	std::cout << "path ask is [" << path << "]\n";
 	return (path);
 }
 
@@ -272,16 +287,21 @@ bool	_cgi(Client &client)
 	string output;
 
 	path_exec = get_path(client.request);
+	std::cout << RED << path_exec << NC << std::endl;
 	if (_isExist(path_exec) == false)
 	{
-		std::cout << "path not found : " <<  path_exec << std::endl;
 		client.response.status_code = NOTFOUND;
+		_construct_error(client.response, client.request);
+		return false;
+	}
+	if ( _isDir(path_exec) == true)
+	{
+		client.response.status_code = FORBIDDEN;
 		_construct_error(client.response, client.request);
 		return false;
 	}
 	if (_isExec(path_exec) == false)
 	{
-		std::cout << "path not exec" << path_exec << std::endl;
 		client.response.status_code = UNAUTHORIZED;
 		_construct_error(client.response, client.request);
 		return false;
@@ -305,6 +325,7 @@ bool	_cgi(Client &client)
 		_construct_error(client.response, client.request);
 		return false;
 	}
+	client.response.status_code = OK;
 	return true;
 }
 
@@ -312,12 +333,10 @@ void	post_handler(Client &client)
 {
 	if (client.response.status_code != OK)
 	{
+		std::cout << RED << "status code not ok " << NC << std::endl;
 		_construct_error(client.response, client.request);
 		return ;
 	}
-	std::cout << std::endl << std::endl;
-	std::cout << BLUE << "\t======POST_HANLDER DEBUG START HERE======" << NC << std::endl;
-	//check if body is too large
 	if (client.request.config.max_body >= 0 
 		&& client.request.headers.find("Content-Length") != client.request.headers.end())
 	{
@@ -328,12 +347,6 @@ void	post_handler(Client &client)
 			return ;
 		}
 	}
-	else if (client.request.headers.find("Transfer-Encoding") != client.request.headers.end())
-	{
-		if (client.response.status_code != REQTOOLARGE)
-			client.response.status_code = NOCONTENT;
-	}
-		//check if cgi
 	if (client.request.uri.find(client.request.config.cgi,
 			client.request.uri.length() - client.request.config.cgi.length()) != client.request.uri.npos)
 	{
@@ -343,7 +356,4 @@ void	post_handler(Client &client)
 	{
 		std::cout << RED << "handle like a put request" << std::endl << NC;
 	}
-
-	std::cout << BLUE << "\t======POST_HANLDER DEBUG  END  HERE======" << NC << std::endl;
-	std::cout << std::endl << std::endl;
 }

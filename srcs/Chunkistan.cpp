@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Chunkistan.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <thsembel@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/10 16:12:37 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/14 17:48:36 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,48 +139,55 @@ void	get_len(Client &client)
 void	dechunk(Client &client)
 {
 	std::string buf = client.Buf;
-	std::string line;
-	if (client.Buf.find("HTTP/1.1") != std::string::npos)
+	//std::string line;
+	std::string len_s;
+	std::string	tmp;
+
+	if (client.chunk.size == 0)
 	{
-		client.chunk.header = client.Buf;
-		return ;
+		len_s = buf.substr(0, buf.find("\r\n"));
+		buf = buf.substr(buf.find("\r\n") + 2); 
+		client.chunk.size = fromHexa(len_s.c_str());
+	std::cout << YELLOW << "client.chunk.size = " << len_s << NC << std::endl;
 	}
-	if (client.request.config.max_body >= 0)
+
+	tmp = buf.substr(0, client.chunk.size);
+	client.chunk.size -= tmp.size();
+	client.chunk.body += tmp;
+	
+	std::string asap;
+	asap = buf.substr(tmp.size());
+	while (asap != "")
 	{
-		if (client.Buf.size() > (size_t)client.request.config.max_body)
-		{
-			client.response.status_code = REQTOOLARGE;
-			_construct_error(client.response, client.request);
-			std::cout << "oui";
-			return ;
-		}
+		asap.erase(0, 2);
+		len_s = asap.substr(0, asap.find("\r\n"));
+		buf = asap.substr(asap.find("\r\n") + 2); 
+		client.chunk.size = fromHexa(len_s.c_str());
+		tmp = buf.substr(0, client.chunk.size);
+		client.chunk.size -= tmp.size();
+		client.chunk.body += tmp;
+		if (tmp != "")
+			asap = buf.substr(tmp.size());
+		else
+			asap.clear();
 	}
-	get_len(client);
-	if (buf != "0\r\n\r\n\0")
-		while (!buf.empty())
-		{
-			ft_gnl(buf, line, '\n');
-			if (ft_ishexa(line) == false)
-			{
-				client.chunk.body += line;
-				if (buf == "0\r\n\r\n\0")
-				{
-					client.chunk.body.pop_back();
-					client.chunk.body.pop_back();
-					break;
-				}
-			}
-		}
-	if (client.chunk.body.size() == client.chunk.size)
+	if (client.chunk.size == 0)
 	{
 		client.chunk.is_chunk = false;
-		client.response.body = client.chunk.body;
-		std::cout << client.response.body << std::endl;
-		std::cout << BLUE << client.chunk.size << NC << std::endl;
-		std::ofstream out("newbob.jpg", std::ios::out | std::ios::binary);
+		client.request.body += client.chunk.body;
+		client.chunk.body.clear();
+		std::ostringstream os;
+		os << client.request.body.size();
+		std::string str(os.str());
+		client.request.headers["Content-Length"] = str;
+		std::cout << YELLOW << "fucking total len = " << client.request.headers["Content-Length"] << std::endl;
+		
+		//client.chunk.is_chunk = true;
 
-		out.write(client.chunk.body.c_str(), client.chunk.body.size());
-		out.close();
+		//std::string tmp_response = "HTTP/1.1 100 Continue\r\n\r\n\r\n";
+		//std::cout << BLUE << "\tSend continue" << NC << std::endl;
+		//write(client.fd, tmp_response.c_str(), tmp_response.size());
+		
 	}
 }
 /*void	dechunk(Client &client)

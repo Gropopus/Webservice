@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 16:49:19 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 15:51:45 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 14:48:21 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,7 +299,7 @@ void	HandlePOST(Client &client)
 		client.response.status_code = OK;
 	if (client.chunk.is_chunk == true)
 	{
-		dechunk(client);
+		//dechunk(client);
 		return ;
 	}
 	post_handler(client); //build post respond

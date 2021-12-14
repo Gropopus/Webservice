@@ -6,10 +6,10 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 16:17:55 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 14:49:26 by thsembel         ###   ########.fr       */
-/*   Updated: 2021/11/30 20:41:13 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:37:14 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "Server.hpp"
 # define MAX_FD 256
@@ -145,10 +145,10 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 {
 	int			ret;
 	Client		*client = NULL;
-	char		Buffer[BUFFER_SIZE];
+	char			Buffer[BUFFER_SIZE];
 
 	client = *it;
-	std::memset(Buffer, '\0', BUFFER_SIZE);
+	std::memset(Buffer, 0, BUFFER_SIZE);
 	ret = recv(client->fd, Buffer, BUFFER_SIZE - 1, 0);
 	if (ret == 0 || ret == -1)
 	{
@@ -173,12 +173,20 @@ int		Server::readRequest(std::vector<Client*>::iterator it)
 	}
 	else
 	{
-		client->Buf = std::string(Buffer);
+		std::string tmp;
+		int i;
+		i = 0;
+		while (i < ret)
+		{
+			tmp.push_back(Buffer[i]);
+			++i;
+		}
+		client->Buf = tmp;
+		//std::cout << YELLOW << std::endl << tmp << std::endl << NC;
 		std::cout << "\n" << ft_getDate() << "\t";
 		std::cout << "Port:\t[" << GREEN << std::to_string(_Port) << NC << "]\tClient connected";
 		std::cout << "\tIP: " << GREEN << client->ip << ":" << client->port << NC << std::endl;
 		std::cout << ft_getDate() << "\t";
-		std::cout << "New Request:\n" << YELLOW << client->Buf << NC << std::endl;
 		ParseRequest(*client);
 		client->setFdSets(true, 1);
 		client->dispatcher(*client);

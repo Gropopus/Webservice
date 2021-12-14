@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/25 17:53:23 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/09 13:58:03 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:03:03 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,24 @@ void	Server::ParseRequest(Client &client)
 	Request		request;
 	request.valid = true;
 
-	if (client.chunk.is_chunk == false)
+	if (client.chunk.is_chunk == true)
+	{
+		if (client.request.headers["Transfer-Encoding"] == "chunked")
+		{
+			dechunk(client);
+		}
+		else
+		{
+			client.chunk.body += client.Buf;
+			if (client.chunk.body.size() == static_cast<unsigned long>(ft_stoi(client.request.headers["Content-Length"])))
+			{
+				client.chunk.is_chunk = false;
+				client.request.body = client.chunk.body;
+			}
+		}
+		return ;
+	}
+	else if (client.chunk.is_chunk == false)
 	{
 		if (buffer[0] == '\r')
 			buffer.erase(buffer.begin());
@@ -85,7 +102,7 @@ void	Server::ParseRequest(Client &client)
 			buffer.erase(buffer.begin());
 		ft_gnl(buffer, request.method, ' ');
 		ft_gnl(buffer, request.uri, ' ');
-//	request.uri.erase(0, 1); erase /
+		//	request.uri.erase(0, 1); erase /
 		ft_gnl(buffer, request.version, '\n');
 		request.version.pop_back();
 		if (request.method.size() == 0 || request.uri.size() == 0
@@ -112,9 +129,18 @@ void	Server::ParseRequest(Client &client)
 	}
 	if (request.valid == true)
 		getConf(*this, request);
-	if (request.headers.find("Transfer-Encoding") != request.headers.end())
+	if (request.headers["Transfer-Encoding"] == "chunked")
+	{	
+		client.Buf = buffer;
+		client.chunk.size = 0;
+		client.chunk.is_chunk = true;
+		dechunk(client);
+	}
+	else if (request.headers["Content-Length"] != "" && request.body.length() != stoul(request.headers["Content-Length"]))
 	{
-		client.chunk.header = client.Buf;
+		size_t end_h = client.Buf.find("\r\n\r\n");
+		client.chunk.header = client.Buf.substr(0, end_h);
+		client.chunk.body = client.Buf.substr(end_h + 4);
 		client.chunk.is_chunk = true;
 	}
 	request.server_name = this->_Name;

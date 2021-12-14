@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 15:21:24 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/13 15:03:37 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 17:46:19 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,4 +185,5 @@ void	buildHeader(Response &response);
 void			buildHeader(Response &response);
 void			getErrors(Response &response, Request &request, std::string error);
 bool	_cgi(Client &client);
+int			fromHexa(const char *nb);
 #endif
