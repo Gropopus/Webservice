@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/14 18:04:30 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/14 18:47:46 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	_prep_env(Client &client, std::string path, string name, string env[14])
 	env[3] = "SERVER_PROTOCOL=HTTP/1.1";
 	env[4] = "SERVER_PORT=";
 		env[4] += std::to_string(client.request.config.port);
+//NEED FIX HERE
 	env[5] = "REQUEST_METHOD=";
 		env[5] += client.request.method;
 	env[6] = "PATH_INFO="; //optional
@@ -347,13 +348,6 @@ void	post_handler(Client &client)
 			return ;
 		}
 	}
-	if (client.request.uri.find(client.request.config.cgi,
-			client.request.uri.length() - client.request.config.cgi.length()) != client.request.uri.npos)
-	{
-		_cgi(client);
-	}
-	else
-	{
-		std::cout << RED << "handle like a put request" << std::endl << NC;
-	}
+	_cgi(client);
+
 }

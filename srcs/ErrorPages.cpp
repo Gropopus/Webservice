@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Error_page.cpp                                     :+:      :+:    :+:   */
+/*   ErrorPages.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 11:45:53 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/07 11:47:22 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/14 18:28:40 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ std::string		GetErrorPages(std::string type)
 	else if (type == "/501.html")
 		page = "<html>\n\t<head>\n\t<title>Error 501</title>\n\t</head>\n\t\
 	<h1>501: Not Implemented</h1>\n\t<p>WTF ?!<br/>Like seriously?\
-	<br/>What is that fake ass method ?!</p>\n</html>";
+	<br/>No no no we don't need to code this !</p>\n</html>";
 	return (page);
 }
 
