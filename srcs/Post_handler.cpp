@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
-/*   Updated: 2021/12/14 18:47:46 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/16 18:05:15 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,7 +341,7 @@ void	post_handler(Client &client)
 	if (client.request.config.max_body >= 0 
 		&& client.request.headers.find("Content-Length") != client.request.headers.end())
 	{
-		if (std::stoi(client.request.headers["Content-Length"]) > client.request.config.max_body)
+		if (ft_stoi(client.request.headers["Content-Length"]) > client.request.config.max_body)
 		{
 			client.response.status_code = REQTOOLARGE;
 			_construct_error(client.response, client.request);
