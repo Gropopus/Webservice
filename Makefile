@@ -6,7 +6,7 @@
 #    By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/24 15:16:37 by gmaris            #+#    #+#              #
-#    Updated: 2021/12/13 15:21:36 by thsembel         ###   ########.fr        #
+#    Updated: 2021/12/16 18:57:11 by thsembel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,6 +66,8 @@ $(NAME): $(OBJS) Makefile $(INCS) ./conf/correct.conf
 	@cat ./conf/testy.conf | sed "s=PWD=$(PWD)=g" > ./conf/correct.conf
 
 all: $(NAME)
+
+bonus:	$(NAME)
 
 clean:
 	@echo "Cleaning: $(OBJS_DIR)"
