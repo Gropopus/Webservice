@@ -6,7 +6,11 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/26 17:41:22 by gmaris            #+#    #+#             */
+<<<<<<< HEAD
+/*   Updated: 2021/12/17 17:09:27 by gmaris           ###   ########.fr       */
+=======
 /*   Updated: 2021/12/16 18:05:15 by thsembel         ###   ########.fr       */
+>>>>>>> a4ad21808979ff19e247e9c029411b3d5e3388bd
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +33,7 @@ void	_construct_error(Response &response, Request &request)
 
 	response.path = request.errors + "/" + response.status_code.substr(0, response.status_code.find(" "));
 	response.path += ".html";
-	std::cout << "path response error = " << response.path << std::endl;
+	// std::cout << "path response error = " << response.path << std::endl;
 	response.content_type = "text/html";
 	file.open(response.path.c_str(), std::ifstream::in);
 	if (file.fail())
@@ -262,7 +266,7 @@ std::string get_path(Request &request)
 		path = request.config.root + request.uri.substr(request.uri.find_last_of('/'));
 	else
 		path = request.config.root + request.uri;
-	std::cout << "path ask is [" << path << "]\n";
+	//std::cout << "path ask is [" << path << "]\n";
 	return (path);
 }
 
@@ -288,7 +292,6 @@ bool	_cgi(Client &client)
 	string output;
 
 	path_exec = get_path(client.request);
-	std::cout << RED << path_exec << NC << std::endl;
 	if (_isExist(path_exec) == false)
 	{
 		client.response.status_code = NOTFOUND;
@@ -334,7 +337,6 @@ void	post_handler(Client &client)
 {
 	if (client.response.status_code != OK)
 	{
-		std::cout << RED << "status code not ok " << NC << std::endl;
 		_construct_error(client.response, client.request);
 		return ;
 	}

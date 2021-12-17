@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/14 18:24:05 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/17 17:09:23 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,18 +106,6 @@ bool ft_ishexa(std::string str)
 	return (true);
 }
 
-void	printcode(std::string str)
-{
-	int i = 0;
-	int nb = 0;
-	while (str[i])
-	{
-		nb = str[i];
-		std::cout << nb << "\t";
-		i++;
-	}
-}
-
 void	get_len(Client &client)
 {
 	int			len = 0;
@@ -151,15 +139,12 @@ void	dechunk(Client &client)
 			buf = "";
 		client.chunk.size = fromHexa(len_s.c_str());
 	}
-
-		std::cout << RED << "here" << std::endl << NC;;
 	tmp = buf.substr(0, client.chunk.size);
 	client.chunk.size -= tmp.size();
 	client.chunk.body += tmp;
 	
 	std::string asap;
 	asap = buf.substr(tmp.size());
-		std::cout << RED << "here" << std::endl << NC;;
 	while (asap != "")
 	{
 		asap.erase(0, 2);

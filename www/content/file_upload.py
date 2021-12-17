@@ -25,23 +25,12 @@ if fileitem.filename:
  
 else:
    message = 'No file was uploaded'
- 
-tmp = os.getenv('SCRIPT_NAME')
-pos = script_name.rfind('/')
-new_name = script_name[0:pos]
-
-url = '<p><a href="http://localhost:'
-url += os.getenv('SERVER_PORT')
-url += '/'
-url += new_name
-url += '">link</a></p>'
 
 print """\
 Content-Type: text/html\n
 <html>
 <body>
-	%s
    <p>%s</p>
 </body>
 </html>
-""" % (url, message,)
+""" % (message,)
