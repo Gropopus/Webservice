@@ -6,13 +6,14 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/07 23:05:45 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/17 17:09:23 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/17 17:27:52 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "Web_serv.hpp"
 # include "Client.hpp"
 # include <fstream>
+
 int		ft_getpower(int nb, int power)
 {
 	if (power < 0)
@@ -61,26 +62,7 @@ int			fromHexa(const char *nb)
 	}
 	return (result);
 }
-/*
- *  length := 0
-     read chunk-size, chunk-ext (if any), and CRLF
-     while (chunk-size > 0) {
-        read chunk-data and CRLF
-        append chunk-data to decoded-body
-        length := length + chunk-size
-        read chunk-size, chunk-ext (if any), and CRLF
-     }
-     read trailer field
-     while (trailer field is not empty) {
-        if (trailer field is allowed to be sent in a trailer) {
-            append trailer field to existing header fields
-        }
-        read trailer-field
-     }
-     Content-Length := length
-     Remove "chunked" from Transfer-Encoding
-     Remove Trailer from existing header fields
-}*/
+
 bool ft_ishexa(std::string str)
 {
 	int i = 0;
