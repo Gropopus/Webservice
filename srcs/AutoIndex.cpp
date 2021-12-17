@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   autoIndex.cpp                                      :+:      :+:    :+:   */
+/*   AutoIndex.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thsembel <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/02 13:33:46 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/02 13:43:45 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/17 17:08:51 by gmaris           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ std::string		createPage(Request &request)
 void	create_autoIndex(Request &request, Response &response)
 {
 	response.body = createPage(request);
-	std::cout << RED << response.body << NC;
+	//std::cout << RED << response.body << NC;
 	response.body_len = response.body.size();
 	response.content_type = "text/html";
 	response.status_code = OK;
