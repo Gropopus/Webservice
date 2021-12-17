@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:15:20 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/13 12:18:45 by thsembel         ###   ########.fr       */
+/*   Updated: 2021/12/17 17:15:36 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ class	 Env
 		};
 
 	 private:
-
 	 	fd_set					_ReadSet;
 	 	fd_set					_WriteSet;
 	 	fd_set					_RSet;

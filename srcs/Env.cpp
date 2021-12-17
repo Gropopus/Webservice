@@ -6,7 +6,7 @@
 /*   By: gmaris <gmaris@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/10 17:55:15 by thsembel          #+#    #+#             */
-/*   Updated: 2021/12/14 17:31:52 by gmaris           ###   ########.fr       */
+/*   Updated: 2021/12/17 17:07:18 by thsembel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,9 +210,6 @@ void	Env::launchWebserv(void)
 				}
 			}
 			signal(SIGINT, handleSignals);
-		//	if (!server->_tmp_clients.empty())
-		//		if (FD_ISSET(server->_tmp_clients.front(), &_WriteSet))
-				//erreur 503
 		}
 	}
 	_Servers.clear();

@@ -6,6 +6,7 @@
 # include <vector>
 # include <queue>
 # include "Client.hpp"
+
 typedef std::string string;
 
 #define TIMEOUT 10
@@ -15,7 +16,6 @@ struct t_conf;
 class Client;
 class Server
 {
-	//friend class Env;
 	public:
 		std::vector<Client*>	Clients;
 		std::queue<int>			_tmp_clients;
